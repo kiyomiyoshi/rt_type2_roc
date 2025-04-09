@@ -877,5 +877,4 @@ p20_vrm <- p20_vrm + guides(color = F) + theme(axis.text.x  = element_text(angle
 sjPlot::save_plot("p20_vrm.png", p20_vrm, width = 9, height = 8, dpi = 300)
 
 
-#'#
 # write.csv(simdat_vrm, "simdat_vrm.csv", row.names =  F)

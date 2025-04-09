@@ -6,6 +6,7 @@ library(ggsci)
 
 theme_set(theme_publication()) 
 
+
 #'# simulation
 mu_dr_tar <- 0.0009
 mu_dr_dis <- 0.0006
@@ -40,6 +41,7 @@ rt_ddm <- which(accum$BE > theta_ddm)[1]
 rt_ddm
 accum[rt_vrm, ]
 accum[rt_ddm, ]
+
 
 #'# visualization
 accum[(rt_vrm + 1):nrow(accum), c("E1", "E2")] <- NA

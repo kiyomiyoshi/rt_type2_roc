@@ -674,19 +674,4 @@ simdat_ddm %>%
 p13_ddm <- p13_ddm + guides(color = F) + theme(axis.text.x  = element_text(angle = 20))
 p13_ddm
 
-
-#'# glm on simulation data
-subdf <- subset(simdat_ddm, simdat_ddm$nu_tar == 0.0025 & simdat_ddm$eta == 0.005 & simdat_ddm$sz == 0.1)
-f1 <- glm(correct ~ mvn_response * rt, data = subdf, family = binomial)
-summary(f1)
-Anova(f1)
-plot(ggpredict(f1, terms = c("mvn_response", "rt")))
-
-f2 <- glm(correct ~ post_conf * rt, data = subdf, family = binomial)
-summary(f2)
-Anova(f2)
-plot(ggpredict(f2, terms = c("post_conf", "rt")))
-
-
-#'#
 # write.csv(simdat_ddm, "simdat_ddm.csv", row.names =  F)

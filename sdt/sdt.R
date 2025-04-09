@@ -5,6 +5,7 @@ library(GGally)
 library(car)
 library(doParallel)
 library(sjPlot)
+
 theme_set(theme_publication()) 
 
 script <- c("Hainguerlot_2018.R",        # too fast or slow response discouraged
@@ -67,7 +68,6 @@ g1[4, 4] <- g1[4, 4] + geom_vline(xintercept = mean(data$mdp_logit), linetype = 
 g1 <- g1 + theme(strip.text = element_text(size = 7))
 g1
 ggsave("figure_1.jpg", g1, height = 4.72, width = 4.72)
-# ggplot_build(g1[2, 3])$layout$panel_scales_x[[1]]$limits
 
 
 #'# stats

@@ -5,6 +5,7 @@ library(GGally)
 library(car)
 library(doParallel)
 library(sjPlot)
+
 theme_set(theme_publication()) 
 
 script <- c("Hainguerlot_2018.R",        # too fast or slow response discouraged
@@ -41,6 +42,7 @@ wide_data <- data %>%
   select(sub, exp, rn, mdp_conf, mdp_rt) %>%
   pivot_wider(names_from = rn, values_from = c(mdp_conf, mdp_rt), names_sep = "_")
 
+
 #'# d prime
 summary(wide_data)
 
@@ -68,4 +70,4 @@ g1[4, 4] <- g1[4, 4] + geom_vline(xintercept = mean(wide_data$mdp_rt_even), line
   annotate("text", x = 1.9, y = 0.6, label = "0.57", size = 3.2) + xlim(-1, 4) + ylim(0, 0.7)
 g1 <- g1 + theme(strip.text = element_text(size = 7))
 g1
-# ggsave("g1.jpg", g1, height = 5.2, width = 5.2)
+ggsave("g1.jpg", g1, height = 5.2, width = 5.2)

@@ -1,4 +1,4 @@
-#+ message = F, warning = F 散布図追加
+#+ message = F, warning = F
 library(tidyverse)
 library(gghalves)
 library(GGally)
@@ -7,7 +7,9 @@ library(doParallel)
 library(sjPlot)
 library(psych)
 library(scales)
+
 theme_set(theme_publication()) 
+
 
 #'# summary stats
 script <- c("Hainguerlot_2018.R",        # too fast or slow response discouraged
@@ -49,6 +51,7 @@ data %>%
 
 stats <- describeBy(data[, -c(11)], group = data$exp, digits = 3)
 print(stats)
+
 
 #'# visualization
 dataset <- c("Hainguerlot_2018", "Hainguerlot_unpub", "Maniscalco_2017_expt1", "Maniscalco_2017_expt2_1",

@@ -8,7 +8,6 @@ library(metaSDT)
 
 dat <- fread("data_Reyes_2015.csv", header = T)
 dat <- subset(dat, dat$Training == "0")
-# dat$Confidence <- round(dat$Confidence, digits = 0)
 dat <- mutate(dat, Correct = ifelse(Stimulus == Response, 1, 0))
 dat <- na.omit(dat)
 

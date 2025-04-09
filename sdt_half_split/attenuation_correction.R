@@ -5,6 +5,7 @@ library(GGally)
 library(car)
 library(doParallel)
 library(sjPlot)
+
 theme_set(theme_publication()) 
 
 script <- c("Hainguerlot_2018.R",        # too fast or slow response discouraged
@@ -40,6 +41,7 @@ data <- data %>%
 wide_data <- data %>%
   select(sub, exp, rn, mdp_conf, mdp_rt) %>%
   pivot_wider(names_from = rn, values_from = c(mdp_conf, mdp_rt), names_sep = "_")
+
 
 #'# d prime
 summary(wide_data)

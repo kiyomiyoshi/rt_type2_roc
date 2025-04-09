@@ -9,14 +9,6 @@ library(metaSDT)
 dat <- fread("data_Hainguerlot_2018.csv", header = T)
 dat <- mutate(dat, Correct = ifelse(Stimulus == Response, 1, 0))
 dat <- na.omit(dat)
-dat <- dat %>% mutate(Confidence = case_when(
-  Confidence == 0.5 ~ 1,
-  Confidence == 0.6 ~ 2,
-  Confidence == 0.7 ~ 3,
-  Confidence == 0.8 ~ 4,
-  Confidence == 0.9 ~ 5,
-  Confidence == 1   ~ 6
-))
 
 m1 <- glmer(Correct ~ Confidence + (1 + Confidence | Subj_idx), family = binomial, data = dat) 
 summary(m1)

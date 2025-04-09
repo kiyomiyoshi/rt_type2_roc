@@ -6,7 +6,7 @@ library(ggeffects)
 library(car)
 library(metaSDT)
 
-dat <- fread("data_Massoni_2017.csv", header=T)
+dat <- fread("data_Massoni_2017.csv", header = T)
 dat <- subset(dat, dat$Difficulty == "3") #time exposure of the stimuli (1 = 850ms, 2 = 700ms, 3 = 550ms). Difficulty 1 and 3 in Study 1; difficulty 2 in Study 2.
 dat <- subset(dat, dat$Confidence >= 0.5)
 dat <- mutate(dat, Correct = ifelse(Stimulus == Response, 1, 0))

@@ -396,5 +396,3 @@ colnames(df) <- c("dp", "mdp_conf", "mdp_rt", "mdp_logit",
 df <- as.data.frame(df)
 df <- na.omit(df)
 summary(df)
-t.test(df$mdp_conf, df$mdp_logit, paired = T)
-ggpairs(df[, c("dp", "mdp_conf", "mdp_rt", "mdp_logit")]) + xlim(-0.6, 4)

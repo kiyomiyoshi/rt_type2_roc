@@ -7,7 +7,9 @@ library(doParallel)
 library(sjPlot)
 library(psych)
 library(scales)
+
 theme_set(theme_publication()) 
+
 
 #'# summary stats
 script <- c("Hainguerlot_2018.R",        # too fast or slow response discouraged
@@ -38,6 +40,7 @@ for (j in 1:length(script)) {
 data <- as.data.frame(data)
 stats <- describeBy(data[, -c(11)], group = data$exp, digits = 3)
 print(stats)
+
 
 #'# visualization
 dataset <- c("Hainguerlot_2018", "Hainguerlot_unpub", "Maniscalco_2017_expt1", "Maniscalco_2017_expt2_1",
@@ -92,6 +95,7 @@ df1 %>%
                                 expression(paste(meta, "-", d, "'"[confidence+RT])))) -> p1
 p1
 ggsave("figure_a4.jpg", p1, dpi = 300)
+
 
 #'# t tests
 data %>%
