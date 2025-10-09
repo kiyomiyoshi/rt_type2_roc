@@ -8,6 +8,7 @@ library(sjPlot)
 library(cowplot)
 library(gridExtra)
 
+source("theme_publication.R")
 theme_set(theme_publication()) 
 
 script <- c("Maniscalco_2017_expt1.R",

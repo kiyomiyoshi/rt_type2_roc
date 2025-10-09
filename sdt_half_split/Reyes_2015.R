@@ -77,6 +77,7 @@ df1 <- foreach(i = 1:length(unique(dat$Subj_idx)), .combine = "rbind", .packages
   
   # RT
   q <- quantile(d$RT_dec, probs = seq(0, 1, by = 1/6), na.rm = TRUE)
+  q <- unique(q)
   d$RT_bin <- cut(d$RT_dec, breaks = q, labels = FALSE, include.lowest = TRUE)
   
   nR_S1 <- c(sum(d$Stimulus == "1" & d$Response == "1" & d$RT_bin == 1, na.rm = TRUE),
@@ -137,6 +138,7 @@ df1 <- foreach(i = 1:length(unique(dat$Subj_idx)), .combine = "rbind", .packages
   m <- glm(Correct ~ Confidence * RT_dec, family = binomial, data = d)
   d$logit <- predict(m)
   q <- quantile(d$logit, probs = seq(0, 1, by = 1/6), na.rm = TRUE)
+  q <- unique(q)
   d$logit_bin <- cut(d$logit, breaks = q, labels = FALSE, include.lowest = TRUE)
   
   nR_S1 <- c(sum(d$Stimulus == "1" & d$Response == "1" & d$logit_bin == 6, na.rm = TRUE),
@@ -262,6 +264,7 @@ df2 <- foreach(i = 1:length(unique(dat$Subj_idx)), .combine = "rbind", .packages
   
   # RT
   q <- quantile(d$RT_dec, probs = seq(0, 1, by = 1/6), na.rm = TRUE)
+  q <- unique(q)
   d$RT_bin <- cut(d$RT_dec, breaks = q, labels = FALSE, include.lowest = TRUE)
   
   nR_S1 <- c(sum(d$Stimulus == "1" & d$Response == "1" & d$RT_bin == 1, na.rm = TRUE),
@@ -322,6 +325,7 @@ df2 <- foreach(i = 1:length(unique(dat$Subj_idx)), .combine = "rbind", .packages
   m <- glm(Correct ~ Confidence * RT_dec, family = binomial, data = d)
   d$logit <- predict(m)
   q <- quantile(d$logit, probs = seq(0, 1, by = 1/6), na.rm = TRUE)
+  q <- unique(q)
   d$logit_bin <- cut(d$logit, breaks = q, labels = FALSE, include.lowest = TRUE)
   
   nR_S1 <- c(sum(d$Stimulus == "1" & d$Response == "1" & d$logit_bin == 6, na.rm = TRUE),
@@ -393,6 +397,28 @@ colnames(df) <- c("dp", "mdp_conf", "mdp_rt", "mdp_logit",
                   "auc1_conf", "auc1_rt", "auc1_logit",
                   "auc2_conf", "auc2_rt", "auc2_logit", "sub", "rn")
 
+df %>%
+  dplyr::filter(
+    dp        > -1 & dp        < 4 &
+      mdp_conf  > -1 & mdp_conf  < 4 &
+      mdp_rt    > -1 & mdp_rt    < 4 & 
+      mdp_logit > -1 & mdp_logit < 4) -> df
+
 df <- as.data.frame(df)
 df <- na.omit(df)
+nrow(df)
 summary(df)
+
+df %>%
+  select(sub, mdp_conf, rn) %>%
+  pivot_wider(names_from = rn, values_from = mdp_conf) %>%
+  ggplot(aes(x = odd, y = even)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) + ggtitle("mdp_conf")
+
+df %>%
+  select(sub, mdp_rt, rn) %>%
+  pivot_wider(names_from = rn, values_from = mdp_rt) %>%
+  ggplot(aes(x = odd, y = even)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) + ggtitle("mdp_rt")

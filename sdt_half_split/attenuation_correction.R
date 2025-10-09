@@ -1,79 +1,131 @@
 #+ message = F, warning = F
 library(tidyverse)
+library(data.table)
 library(gghalves)
 library(GGally)
 library(car)
 library(doParallel)
 library(sjPlot)
+library(ggdist)
+library(metafor)
 
-theme_set(theme_publication()) 
+data_filtered <- fread("data_filtered.csv", header = T)
+data_sh_filtered <- fread("data_sh_filtered.csv", header = T)
 
-script <- c("Hainguerlot_2018.R",        # too fast or slow response discouraged
-            "Hainguerlot_unpub.R",       # too fast or slow response discouraged
-            "Maniscalco_2017_expt1.R",   # trial pacing depended on subject RT, 5s time limit
-            "Maniscalco_2017_expt2_1.R", # trial pacing depended on subject RT, 5s time limit
-            "Maniscalco_2017_expt2_2.R", # trial pacing depended on subject RT, 5s time limit
-            "Maniscalco_2017_expt2_3.R", # trial pacing depended on subject RT, 5s time limit
-            "Maniscalco_2017_expt3.R",   # trial pacing depended on subject RT, 5s time limit
-            "Maniscalco_2017_expt4.R",   # trial pacing depended on subject RT, 5s time limit
-            "Massoni_2017_1.R",          # no time limit in response
-            "Massoni_2017_2.R",          # no time limit in response
-            "Massoni_2017_3.R",          # no time limit in response
-            "Massoni_unpub_1_1.R",       # no information
-            "Massoni_unpub_1_2.R",       # no information
-            "Massoni_unpub_2_1.R",       # no information
-            "Massoni_unpub_2_2.R",       # no information
-            "Reyes_2015.R")              # instructed to respond in less than 2000 ms
+cor_by_exp <- data_filtered %>%
+  group_by(exp) %>%
+  summarise(
+    n = sum(complete.cases(mdp_conf, mdp_rt)),
+    r = cor(mdp_conf, mdp_rt, use = "pairwise.complete.obs") 
+  )
+cor_by_exp
 
-data <- c()
+wide <- data_sh_filtered %>%
+  pivot_wider(
+    id_cols = c(exp, sub),
+    names_from = rn,
+    values_from = c(mdp_conf, mdp_rt)
+  )
+nrow(wide)
+summary(wide)
 
-for (j in 1:length(script)) {
-  source(script[j]) 
-  df$exp <- script[j] 
-  data <- rbind(data, df)
-}  
-
-data <- data %>%
-  group_by(exp, sub) %>% 
-  filter(all(c("odd", "even") %in% rn)) %>%
-  ungroup()
-
-wide_data <- data %>%
-  select(sub, exp, rn, mdp_conf, mdp_rt) %>%
-  pivot_wider(names_from = rn, values_from = c(mdp_conf, mdp_rt), names_sep = "_")
-
-
-#'# d prime
-summary(wide_data)
-
-g1 <- GGally::ggpairs(wide_data,
-                      columns = c("mdp_conf_odd", "mdp_conf_even", "mdp_rt_odd", "mdp_rt_even"),
-                      columnLabels = c('"meta-d\'"[confidence]~(odd)', '"meta-d\'"[confidence]~(even)', '"meta-d\'"[RT]~(odd)', '"meta-d\'"[RT]~(even)'),
-                      labeller = label_parsed,
-                      diag = list(continuous = wrap("densityDiag", size = 0.4)),
-                      upper = list(continuous = wrap("cor", size = 3.5, color = "#333333")),
-                      lower = list(continuous = wrap("points", alpha = 0.07)))
-
-g1[1, 1] <- g1[1, 1] + geom_vline(xintercept = mean(wide_data$mdp_conf_odd), linetype = "dashed", size = 0.3) + 
-  annotate("text", x = 2.2, y = 0.6, label = "0.89", size = 3.2) + xlim(-1, 4) + ylim(0, 0.7)
-g1[2, 1] <- g1[2, 1] + xlim(-1, 4) + ylim(-1, 4)
-g1[3, 1] <- g1[3, 1] + xlim(-1, 4) + ylim(-1, 4)
-g1[4, 1] <- g1[4, 1] + xlim(-1, 4) + ylim(-1, 4)
-g1[2, 2] <- g1[2, 2] + geom_vline(xintercept = mean(wide_data$mdp_conf_even), linetype = "dashed", size = 0.3) + 
-  annotate("text", x = 2.2, y = 0.6, label = "0.89", size = 3.2) + xlim(-1, 4) + ylim(0, 0.7)
-g1[3, 2] <- g1[3, 2] + xlim(-1, 4) + ylim(-1, 4)
-g1[4, 2] <- g1[4, 2] + xlim(-1, 4) + ylim(-1, 4)
-g1[3, 3] <- g1[3, 3] + geom_vline(xintercept = mean(wide_data$mdp_rt_odd), linetype = "dashed", size = 0.3) + 
-  annotate("text", x = 1.9, y = 0.6, label = "0.59", size = 3.2) + xlim(-1, 4) + ylim(0, 0.7)
-g1[4, 3] <- g1[4, 3] + xlim(-1, 4) + ylim(-1, 4)
-g1[4, 4] <- g1[4, 4] + geom_vline(xintercept = mean(wide_data$mdp_rt_even), linetype = "dashed", size = 0.3) + 
-  annotate("text", x = 1.9, y = 0.6, label = "0.57", size = 3.2) + xlim(-1, 4) + ylim(0, 0.7)
-g1 <- g1 + theme(strip.text = element_text(size = 7))
-g1
-ggsave("figure_A.jpg", g1, height = 5.2, width = 5.2)
+reliability <- wide %>%
+  group_by(exp) %>%
+  summarise(
+    r_conf = cor(mdp_conf_odd, mdp_conf_even, use = "pairwise.complete.obs"),
+    r_rt   = cor(mdp_rt_odd, mdp_rt_even, use = "pairwise.complete.obs"),
+    r_conf_sb = 2 * r_conf / (1 + r_conf),  # Spearman-Brown correction
+    r_rt_sb   = 2 * r_rt / (1 + r_rt)
+  )
+reliability
 
 # attenuation correction
-reliability_rt   <- (2 * 0.431) / (1 + 0.431)
-reliability_conf <- (2 * 0.588) / (1 + 0.588)
+df_joined <- cor_by_exp %>%
+  left_join(reliability, by = "exp") %>%
+  select(exp, n, r, r_conf, r_rt, r_conf_sb, r_rt_sb)
 
-0.518 / sqrt(reliability_rt * reliability_conf)
+df_joined <- df_joined %>%
+  mutate(
+    r_corrected = r / sqrt(r_conf_sb * r_rt_sb)  )
+df_joined
+
+# screening & clipping
+df_joined <- df_joined %>%
+  mutate(
+    # screening
+    r_corrected = if_else(
+      r_conf_sb > 0.3 & r_rt_sb > 0.3,
+      r / sqrt(r_conf_sb * r_rt_sb),
+      NA_real_
+    ),
+    # clipping
+    r_corrected = case_when(
+      is.na(r_corrected) ~ NA_real_,
+      r_corrected >  1 ~ 1,
+      r_corrected < -1 ~ -1,
+      TRUE ~ r_corrected
+    )
+  )
+df_joined
+
+df_complete <- df_joined %>% 
+  filter(!is.na(r_corrected))
+df_complete
+
+# meta-analysis
+r_to_z <- function(r) 0.5 * log((1 + r)/(1 - r))
+
+# Fisher's z transformation
+df_meta <- df_complete %>%
+  mutate(
+    z_r = r_to_z(r),
+    z_r_corrected = r_to_z(r_corrected),
+    se_z_r = 1 / sqrt(n - 3),
+    se_z_r_corrected = 1 / sqrt(n - 3)
+  ) %>%
+  select(exp, n, r, r_corrected, z_r, z_r_corrected, se_z_r, se_z_r_corrected)
+
+clip_r <- function(r, eps = 1e-6) {
+  pmax(pmin(r, 1 - eps), -1 + eps)
+}
+
+eps <- 1e-6
+df_meta <- df_meta %>%
+  mutate(
+    r_corrected_clipped = pmin(pmax(r_corrected, -1 + eps), 1 - eps),
+    z_r_corrected_clipped = r_to_z(r_corrected_clipped)
+  )
+df_meta
+
+df_meta <- df_meta %>%
+  mutate(
+    r_clipped = pmin(pmax(r, -1 + 1e-6), 1 - 1e-6),
+    z_r_clipped = r_to_z(r_clipped)
+  )
+
+# zero-order correlation
+yi_r <- df_meta$z_r_clipped
+sei_r <- df_meta$se_z_r
+res_r <- rma(yi = yi_r, sei = sei_r, method = "REML")
+
+# disattenuated correlation
+yi_rc <- df_meta$z_r_corrected_clipped
+sei_rc <- df_meta$se_z_r_corrected
+res_rc <- rma(yi = yi_rc, sei = sei_rc, method = "REML")
+
+z_to_r <- function(z) {
+  (exp(2*z) - 1) / (exp(2*z) + 1)
+}
+
+list(
+  original_r = list(
+    r = z_to_r(res_r$b),
+    ci_lb = z_to_r(res_r$ci.lb),
+    ci_ub = z_to_r(res_r$ci.ub)
+  ),
+  corrected_r = list(
+    r = z_to_r(res_rc$b),
+    ci_lb = z_to_r(res_rc$ci.lb),
+    ci_ub = z_to_r(res_rc$ci.ub)
+  )
+)

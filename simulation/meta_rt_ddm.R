@@ -15,6 +15,7 @@ library(scales)
 library(ggeffects)
 library(ggh4x)
 
+source("theme_publication.R")
 theme_set(theme_publication()) 
 options(scipen = 6)
 

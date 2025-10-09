@@ -6,6 +6,9 @@ library(GGally)
 library(car)
 library(doParallel)
 library(sjPlot)
+library(ggstance) 
+
+source("theme_publication.R")
 theme_set(theme_publication()) 
 
 cores <- getOption("mc.cores", detectCores())
@@ -90,22 +93,32 @@ Dataset <- c("Hainguerlot_2018", "Hainguerlot_unpub", "Maniscalco_2017_expt1", "
 df$Dataset <- rep(Dataset, 3)
 df$Dataset <- factor(df$Dataset, levels = rev(Dataset))
 
-ggplot(df, aes(x = Estimate, y = Dataset, color = Variable)) +
+df$Variable <- factor(df$Variable, levels = c("interaction", "RT", "confidence"))
+ggplot(df, aes(x = Estimate, y = Dataset, 
+               color = Variable, shape = Variable)) +
   geom_vline(xintercept = 0, linetype = "dashed", color = gray(0.35)) +
-  geom_point(position = position_dodge(width = 0.7), size = 3) +  # Dodged points for estimates
-  geom_errorbar(aes(xmin = Lower, xmax = Upper), 
-                position = position_dodge(width = 0.7), width = 0.4) +  # Dodged error bars
-  theme_light(base_size = 12) +  # Use a clean theme
-  labs(x = "Estimate", y = NULL, color = "Variable") +
+  geom_point(position = ggstance::position_dodgev(height = 1.0), size = 2.5) +
+  geom_errorbar(aes(xmin = Lower, xmax = Upper),
+                position = ggstance::position_dodgev(height = 1.0), width = 0.6) +
+  scale_y_discrete(expand = expansion(mult = c(0.05, 0.05))) +
+  theme_light(base_size = 12) +
+  labs(x = "Estimate", y = NULL, color = "Variable", shape = "Variable") +
   theme(
     axis.text.y = element_text(size = 11, color = "black"),
     axis.text.x = element_text(size = 10, color = "black"),
-    legend.position = "top"
+    legend.position = "top",
+    legend.margin = margin(t = 0, b = 0)
   ) +
-  scale_color_discrete(limits = c("confidence", "RT", "interaction")) -> p1
+  scale_color_manual(
+    limits = c("confidence", "RT", "interaction"),
+    values = c("confidence" = "#E69F00", "RT" = "#009E73", "interaction" = "#0072B2")
+  ) +
+  scale_shape_manual(
+    limits = c("confidence", "RT", "interaction"),
+    values = c("confidence" = 16, "RT" = 17, "interaction" = 15)
+  ) -> p1
 p1
-ggsave("figure_2.jpg", p1, dpi = 300)
-
+ggsave("figure_2.jpg", p1, width = 14, height = 13, units = "cm", dpi = 300)
 
 #'# type-1 roc from glmm logit
 roc_1_list <- results[, 5]

@@ -5,7 +5,9 @@ library(GGally)
 library(car)
 library(doParallel)
 library(sjPlot)
+library(ggdist)
 
+source("theme_publication.R")
 theme_set(theme_publication()) 
 
 script <- c("Hainguerlot_2018.R",        # too fast or slow response discouraged
@@ -25,11 +27,28 @@ script <- c("Hainguerlot_2018.R",        # too fast or slow response discouraged
             "Massoni_unpub_2_2.R",       # no information
             "Reyes_2015.R")              # instructed to respond in less than 2000 ms
 
+dataset <- c("Hainguerlot_2018",       
+             "Hainguerlot_unpub",      
+             "Maniscalco_2017_expt1",  
+             "Maniscalco_2017_expt2_1",
+             "Maniscalco_2017_expt2_2",
+             "Maniscalco_2017_expt2_3",
+             "Maniscalco_2017_expt3",
+             "Maniscalco_2017_expt4",
+             "Massoni_2017_1",
+             "Massoni_2017_2",
+             "Massoni_2017_3",
+             "Massoni_unpub_1_1",
+             "Massoni_unpub_1_2",
+             "Massoni_unpub_2_1",
+             "Massoni_unpub_2_2",
+             "Reyes_2015") 
+
 data <- c()
 
 for (j in 1:length(script)) {
   source(script[j]) 
-  df$exp <- script[j] 
+  df$exp <- dataset[j] 
   data <- rbind(data, df)
 }  
 
@@ -41,8 +60,7 @@ data <- mutate(data, mratio_conf =  mdp_conf / dp,
                      mdiff_rt =     mdp_rt - dp,
                      mdiff_logit =  mdp_logit - dp)
 
-
-#'# d prime
+# correlation plot
 data %>%
   select(dp, mdp_conf, mdp_rt, mdp_logit) %>%
   summary()
@@ -67,18 +85,84 @@ g1[4, 4] <- g1[4, 4] + geom_vline(xintercept = mean(data$mdp_logit), linetype = 
   annotate("text", x = 2.0, y = 0.6, label = "1.08", size = 3.2) + ylim(0, 0.7)
 g1 <- g1 + theme(strip.text = element_text(size = 7))
 g1
-ggsave("figure_1.jpg", g1, height = 4.72, width = 4.72)
 
+# half-violin plot
+data %>%
+  select(dp, mdp_conf, mdp_rt, mdp_logit, exp) %>%
+  pivot_longer(
+    cols = c(dp, mdp_conf, mdp_rt, mdp_logit),
+    names_to = "variable",
+    values_to = "value"
+  ) %>%
+  mutate(exp = as.character(exp)) -> data_long
 
-#'# stats
-t.test(data$dp, data$mdp_logit, paired = T)
-t.test(data$mdp_conf, data$mdp_rt, paired = T)
-t.test(data$mdp_conf, data$mdp_logit, paired = T)
+data_long <- bind_rows(
+  data_long,
+  data_long %>% mutate(exp = "All"))
 
-nrow(subset(data, data$dp < 0)) / nrow(data)
-nrow(subset(data, data$mdp_conf < 0)) / nrow(data)
-nrow(subset(data, data$mdp_rt < 0)) / nrow(data)
-nrow(subset(data, data$mdp_logit < 0)) / nrow(data)
+exp_levels <- c(rev(unique(data$exp)), "All")
+data_long <- data_long %>%
+  mutate(exp = factor(exp, levels = exp_levels))
+
+data_long %>%
+  mutate(variable = factor(variable,
+                       levels = c("dp", "mdp_conf", "mdp_rt", "mdp_logit"),
+                       labels = c("d*\"'\"",
+                                  "meta*\"-\"*d*\"'\"[confidence]",
+                                  "meta*\"-\"*d*\"'\"[RT]",
+                                  "meta*\"-\"*d*\"'\"[confidence+RT]"))) -> data_long
+
+means <- data_long %>%
+  group_by(variable, exp) %>%
+  summarise(mean_value = mean(value), .groups = "drop")
+
+ggplot(data_long, aes(x = value, y = fct_rev(exp))) +
+  stat_halfeye(
+    adjust = 0.5,
+    justification = 0.2,
+    width = 0.6,
+    .width = 0,
+    fill = "darkgray",
+    point_colour = NA
+  ) +
+  geom_point(
+    data = means, 
+    aes(x = mean_value, y = fct_rev(exp)),
+    color = "black", shape = 21, size = 1.4, fill = "white",
+    position = position_nudge(y = 0.1)
+  ) +
+  facet_wrap(~variable, labeller = label_parsed, nrow = 1) +
+  theme_bw() +
+  theme(legend.position = "none") +
+  coord_cartesian(xlim = c(-1, 4)) +
+  labs(x = NULL, y = NULL) +
+  theme(axis.text.y = element_text(size = 8),
+        strip.text = element_text(size = 8)) -> g2
+g2
+ggsave("figure_1.png", g2, height = 4.72 * 0.56, width = 4.72 * 1.55)
+
+#
+vars <- c("dp", "mdp_conf", "mdp_rt", "mdp_logit")
+comb <- combn(vars, 2, simplify = FALSE)
+
+results <- data %>%
+  group_by(exp) %>%
+  summarise(
+    p_values = list(map_dbl(comb, function(pair) {
+      t.test(cur_data()[[pair[1]]], cur_data()[[pair[2]]], paired = TRUE)$p.value
+    })),
+    .groups = "drop"
+  )
+
+results_long <- results %>%
+  mutate(pair_name = list(map_chr(comb, ~ paste(.x, collapse = "-")))) %>%
+  unnest(c(p_values, pair_name)) %>%
+  rename(p_value = p_values)
+
+results_long %>%
+  mutate(significant = p_value < 0.05) %>%
+  group_by(pair_name) %>%
+  summarise(n_significant = sum(significant), .groups = "drop")
 
 
 #'# m-ratio
@@ -101,23 +185,78 @@ data %>%
                   diag = list(continuous = wrap("densityDiag", size = 0.4)),
                   upper = list(continuous = wrap("cor", size = 3.5, color = "#333333")),
                   lower = list(continuous = wrap("points", alpha = 0.07))) -> g2
-g2[1, 1] <- g2[1, 1] + geom_vline(xintercept = 1.38, linetype = "dashed", size = 0.3) + 
+g3[1, 1] <- g3[1, 1] + geom_vline(xintercept = 1.38, linetype = "dashed", size = 0.3) + 
   annotate("text", x = 2.1, y = 0.5, label = "1.38", size = 3.2) + xlim(0, 4)
-g2[2, 1] <- g2[2, 1] + xlim(0, 4) + ylim(0, 4)
-g2[2, 2] <- g2[2, 2] + geom_vline(xintercept = 0.89, linetype = "dashed", size = 0.3) + 
+g3[2, 1] <- g3[2, 1] + xlim(0, 4) + ylim(0, 4)
+g3[2, 2] <- g3[2, 2] + geom_vline(xintercept = 0.89, linetype = "dashed", size = 0.3) + 
   annotate("text", x = 1.8, y = 0.8, label = "0.89", size = 3.2) + xlim(0, 4)
-g2[3, 1] <- g2[3, 1] + xlim(0, 4) + ylim(0, 4)
-g2[3, 2] <- g2[3, 2] + xlim(0, 4) + ylim(0, 4)
-g2[3, 3] <- g2[3, 3] + geom_vline(xintercept = 0.64, linetype = "dashed", size = 0.3) + 
+g3[3, 1] <- g3[3, 1] + xlim(0, 4) + ylim(0, 4)
+g3[3, 2] <- g3[3, 2] + xlim(0, 4) + ylim(0, 4)
+g3[3, 3] <- g3[3, 3] + geom_vline(xintercept = 0.64, linetype = "dashed", size = 0.3) + 
   annotate("text", x = 1.6, y = 0.8, label = "0.64", size = 3.2) + xlim(0, 4)
-g2[4, 1] <- g2[4, 1] + xlim(0, 4) + ylim(0, 4)
-g2[4, 2] <- g2[4, 2] + xlim(0, 4) + ylim(0, 4)
-g2[4, 3] <- g2[4, 3] + xlim(0, 4) + ylim(0, 4)
-g2[4, 4] <- g2[4, 4] + geom_vline(xintercept = 0.98, linetype = "dashed", size = 0.3) + 
+g3[4, 1] <- g3[4, 1] + xlim(0, 4) + ylim(0, 4)
+g3[4, 2] <- g3[4, 2] + xlim(0, 4) + ylim(0, 4)
+g3[4, 3] <- g3[4, 3] + xlim(0, 4) + ylim(0, 4)
+g3[4, 4] <- g3[4, 4] + geom_vline(xintercept = 0.98, linetype = "dashed", size = 0.3) + 
   annotate("text", x = 1.9, y = 0.8, label = "0.98", size = 3.2) + xlim(0, 4)
-g2 <- g2 + theme(strip.text = element_text(size = 7))
-g2
-ggsave("figure_A3.jpg", g2, height = 4.72, width = 4.72)
+g3 <- g3 + theme(strip.text = element_text(size = 7))
+g3
+
+
+data %>%
+  filter(dp > 0 & mratio_conf > 0 & mratio_rt > 0 & mratio_logit > 0) %>%
+  filter(mratio_conf < 4 & mratio_rt < 4 & mratio_logit < 4) %>%
+  select(mratio_conf, mratio_rt, mratio_logit, exp) %>%
+  pivot_longer(
+    cols = c(mratio_conf, mratio_rt, mratio_logit),
+    names_to = "variable",
+    values_to = "value"
+  ) %>%
+  mutate(exp = as.character(exp)) -> data_long
+
+data_long <- bind_rows(
+  data_long,
+  data_long %>% mutate(exp = "All"))
+
+exp_levels <- c(rev(unique(data$exp)), "All")
+data_long <- data_long %>%
+  mutate(exp = factor(exp, levels = exp_levels))
+
+data_long %>%
+  mutate(variable = factor(variable,
+                           levels = c("mratio_conf", "mratio_rt", "mratio_logit"),
+                           labels = c("m*\"-\"*ratio*\"\"[confidence]",
+                                      "m*\"-\"*ratio*\"\"[RT]",
+                                      "m*\"-\"*ratio*\"\"[confidence+RT]"))) -> data_long
+
+means <- data_long %>%
+  group_by(variable, exp) %>%
+  summarise(mean_value = mean(value), .groups = "drop")
+
+ggplot(data_long, aes(x = value, y = fct_rev(exp))) +
+  stat_halfeye(
+    adjust = 0.5,
+    justification = 0.2,
+    width = 0.6,
+    .width = 0,
+    fill = "darkgray",
+    point_colour = NA
+  ) +
+  geom_point(
+    data = means, 
+    aes(x = mean_value, y = fct_rev(exp)),
+    color = "black", shape = 21, size = 1.4, fill = "white",
+    position = position_nudge(y = 0.1)
+  ) +
+  facet_wrap(~variable, labeller = label_parsed, nrow = 1) +
+  theme_bw() +
+  theme(legend.position = "none") +
+  coord_cartesian(xlim = c(0, 4)) +
+  labs(x = NULL, y = NULL) +
+  theme(axis.text.y = element_text(size = 8),
+        strip.text = element_text(size = 8)) -> g4
+g4
+ggsave("figure_a4.png", g4, height = 4.72 * 0.56, width = 4.72 * 1.25)
 
 
 #'# m-ratio (dp > 1)

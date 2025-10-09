@@ -344,6 +344,28 @@ colnames(df) <- c("dp", "mdp_conf", "mdp_rt", "mdp_logit",
                   "auc1_conf", "auc1_rt", "auc1_logit",
                   "auc2_conf", "auc2_rt", "auc2_logit", "sub", "rn")
 
+df %>%
+  dplyr::filter(
+    dp        > -1 & dp        < 4 &
+      mdp_conf  > -1 & mdp_conf  < 4 &
+      mdp_rt    > -1 & mdp_rt    < 4 & 
+      mdp_logit > -1 & mdp_logit < 4) -> df
+
 df <- as.data.frame(df)
 df <- na.omit(df)
+nrow(df)
 summary(df)
+
+df %>%
+  select(sub, mdp_conf, rn) %>%
+  pivot_wider(names_from = rn, values_from = mdp_conf) %>%
+  ggplot(aes(x = odd, y = even)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) + ggtitle("mdp_conf")
+
+df %>%
+  select(sub, mdp_rt, rn) %>%
+  pivot_wider(names_from = rn, values_from = mdp_rt) %>%
+  ggplot(aes(x = odd, y = even)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) + ggtitle("mdp_rt")

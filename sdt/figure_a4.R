@@ -8,8 +8,8 @@ library(sjPlot)
 library(psych)
 library(scales)
 
+source("theme_publication.R")
 theme_set(theme_publication()) 
-
 
 #'# summary stats
 script <- c("Hainguerlot_2018.R",        # too fast or slow response discouraged
