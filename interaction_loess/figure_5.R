@@ -58,5 +58,6 @@ sjPlot::save_plot("figure_3.jpg", p1, width = 12, height = 8, dpi = 300)
 
   guides(color = F) 
 p
-save_plot("sliding_window2.jpg", p)
-ggsave("sliding_window_2.jpg", p)
+
+save_plot("figure_5.jpg", p)
+ggsave("figure_5.jpg", p)
