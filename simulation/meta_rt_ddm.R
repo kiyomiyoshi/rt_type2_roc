@@ -315,20 +315,20 @@ simdat_ddm %>%
         legend.background = element_rect(fill = NA, colour = NA),
         legend.key = element_rect(fill = NA)) +
   facet_wrap(~ condition, labeller = label_parsed, nrow = 2)  +
-  scale_color_npg() + coord_cartesian(ylim = c(0, 1)) + ggtitle("2DSD") -> p1_ddm
+  scale_color_npg() + coord_cartesian(ylim = c(0, 1)) -> p1_ddm
 p1_ddm
 p1_ddm <- p1_ddm + guides(color = F) + theme(legend.text = element_text(size = 3),
                                              legend.position = "top", 
                                              legend.direction = "horizontal",
                                              legend.background = element_rect(fill = NA, colour = NA),
                                              legend.key = element_rect(fill = NA),
-                                             strip.text = element_text(size = 4.2, face = "bold", color = "black"),
-                                             plot.margin = margin(5, 5, 5, 5), 
+                                             strip.text = element_text(size = 5.8, face = "bold", color = "black"),
+                                             plot.margin = margin(5.5, 5.5, 5.5, 5.5), 
                                              plot.title = element_text(size = 5), 
-                                             axis.title.x = element_text(size = 5),
-                                             axis.title.y = element_text(size = 5),
-                                             axis.text.x = element_text(size = 4, angle = 25),
-                                             axis.text.y = element_text(size = 4))
+                                             axis.title.x = element_text(size = 7),
+                                             axis.title.y = element_text(size = 7),
+                                             axis.text.x = element_text(size = 5, angle = 25),
+                                             axis.text.y = element_text(size = 5))
 
 # RT histogram
 simdat_ddm %>%
@@ -343,11 +343,11 @@ simdat_ddm %>%
                                                            "0.0035" = "ν[target] == 0.0035"), label_parsed),
                                  eta = as_labeller(c("0.0005" = "η == 0.0005", "0.005" = "η == 0.005"), label_parsed),
                                  sz = as_labeller(c("0.1" = "s[z] == 0.1", "0.6" = "s[z] == 0.6"), label_parsed))) +
-  scale_fill_npg() + scale_color_npg() + ggtitle("2DSD") +
+  scale_fill_npg() + scale_color_npg() + 
   theme(axis.title = element_text(size = 7), legend.position = "top", plot.title = element_text(size = 7),
         strip.text = element_text(size = 7, margin = margin(-0.5, -0.5, -0.5, -0.5, "pt"))) -> p2_ddm
 p2_ddm 
-p2_ddm <- p2_ddm + guides(color = F, fill = F) +
+p2_ddm <- p2_ddm + 
   theme(strip.text = element_text(size = 6.5, face = "bold"),
         plot.margin = margin(5, 5, 5, 5), 
         plot.title = element_text(size = 8))
@@ -365,20 +365,20 @@ simdat_ddm %>%
   scale_color_discrete(labels = c("target", "distractor")) + labs(color = "choice") +
   scale_x_continuous(breaks = c(0.0015, 0.0025, 0.0035)) + xlab(expression(bold(paste({ν[target]})))) +
   facet_wrap(~ condition, labeller = label_parsed, nrow = 2)  +
-  ylab("Mean RT (s)") + scale_color_npg() + coord_cartesian(ylim = c(0.5, 1.5)) + ggtitle("2DSD") -> p3_ddm
+  ylab("Mean RT (s)") + scale_color_npg() + coord_cartesian(ylim = c(0.5, 1.5)) -> p3_ddm
 p3_ddm
 p3_ddm <- p3_ddm + guides(color = F) + theme(legend.text = element_text(size = 3),
                                              legend.position = "top", 
                                              legend.direction = "horizontal",
                                              legend.background = element_rect(fill = NA, colour = NA),
                                              legend.key = element_rect(fill = NA),
-                                             strip.text = element_text(size = 4.2, face = "bold", color = "black"),
-                                             plot.margin = margin(5, 5, 5, 5), 
+                                             strip.text = element_text(size = 5.8, face = "bold", color = "black"),
+                                             plot.margin = margin(5.5, 5.5, 5.5, 5.5), 
                                              plot.title = element_text(size = 5), 
-                                             axis.title.x = element_text(size = 5),
-                                             axis.title.y = element_text(size = 5),
-                                             axis.text.x = element_text(size = 4, angle = 25),
-                                             axis.text.y = element_text(size = 4))
+                                             axis.title.x = element_text(size = 7),
+                                             axis.title.y = element_text(size = 7),
+                                             axis.text.x = element_text(size = 5, angle = 25),
+                                             axis.text.y = element_text(size = 5))
 
 # mean post confidence
 simdat_ddm %>%
@@ -393,20 +393,20 @@ simdat_ddm %>%
   scale_color_discrete(labels = c("target", "distractor")) + labs(color = "choice") +
   scale_x_continuous(breaks = c(0.0015, 0.0025, 0.0035)) + xlab(expression(bold(paste({ν[target]})))) +
   facet_wrap(~ condition, labeller = label_parsed, nrow = 2)  +
-  ylab("Mean confidence") + scale_color_npg() + coord_cartesian(ylim = c(-0.5, 1.2)) + ggtitle("2DSD") -> p4_ddm
+  ylab("Mean confidence") + scale_color_npg() + coord_cartesian(ylim = c(-0.5, 1.2)) -> p4_ddm
 p4_ddm
 p4_ddm <- p4_ddm + guides(color = F) + theme(legend.text = element_text(size = 3),
                                              legend.position = "top", 
                                              legend.direction = "horizontal",
                                              legend.background = element_rect(fill = NA, colour = NA),
                                              legend.key = element_rect(fill = NA),
-                                             strip.text = element_text(size = 4.2, face = "bold", color = "black"),
-                                             plot.margin = margin(5, 5, 5, 5), 
+                                             strip.text = element_text(size = 5.8, face = "bold", color = "black"),
+                                             plot.margin = margin(5.5, 5.5, 5.5, 5.5), 
                                              plot.title = element_text(size = 5), 
-                                             axis.title.x = element_text(size = 5),
-                                             axis.title.y = element_text(size = 5),
-                                             axis.text.x = element_text(size = 4, angle = 25),
-                                             axis.text.y = element_text(size = 4))
+                                             axis.title.x = element_text(size = 7),
+                                             axis.title.y = element_text(size = 7),
+                                             axis.text.x = element_text(size = 5, angle = 25),
+                                             axis.text.y = element_text(size = 5))
 
 # sdt measures
 sdt_ddm %>%
@@ -425,7 +425,7 @@ sdt_ddm %>%
   theme(legend.position = "top") + ylab("meta-d'") +
   scale_color_manual(values = c("black", hue_pal()(3))) +
   scale_x_continuous(breaks = c(0.0015, 0.0025, 0.0035)) + xlab(expression(bold(paste({ν[target]})))) +
-  facet_wrap(~ condition, labeller = label_parsed, nrow = 2, scales = "free_y") + ggtitle("2DSD") -> p5_ddm
+  facet_wrap(~ condition, labeller = label_parsed, nrow = 2, scales = "free_y") -> p5_ddm
 p5_ddm
 
 position_scales <- list(
@@ -436,13 +436,13 @@ position_scales <- list(
 
 p5_ddm <- p5_ddm + facetted_pos_scales(y = position_scales) + 
   guides(color = F) +
-  theme(strip.text = element_text(size = 4.2, face = "bold", color = "black"),
-        plot.margin = margin(5, 5, 5, 5), 
+  theme(strip.text = element_text(size = 5.8, face = "bold", color = "black"),
+        plot.margin = margin(5.5, 5.5, 5.5, 5.5), 
         plot.title = element_text(size = 5), 
-        axis.title.x = element_text(size = 5),
-        axis.title.y = element_text(size = 5),
-        axis.text.x = element_text(size = 4, angle = 25),
-        axis.text.y = element_text(size = 4))
+        axis.title.x = element_text(size = 7),
+        axis.title.y = element_text(size = 7),
+        axis.text.x = element_text(size = 5, angle = 25),
+        axis.text.y = element_text(size = 5))
 
 # m-ratio
 sdt_ddm %>%
@@ -462,16 +462,16 @@ sdt_ddm %>%
   theme(legend.position = "top") +
   scale_x_continuous(breaks = c(0.0015, 0.0025, 0.0035)) + xlab(expression(bold(paste({ν[target]})))) +
   facet_wrap(~ condition, labeller = label_parsed, nrow = 2) +
-  coord_cartesian(ylim = c(-0.3, 1.1)) + scale_y_continuous(breaks = seq(-0.2, 1, 0.4)) + ggtitle("2DSD") -> p6_ddm
+  coord_cartesian(ylim = c(-0.3, 1.1)) + scale_y_continuous(breaks = seq(-0.2, 1, 0.4)) -> p6_ddm
 p6_ddm
 p6_ddm <- p6_ddm + guides(color = F) +
-  theme(strip.text = element_text(size = 4.2, face = "bold", color = "black"),
-        plot.margin = margin(5, 5, 5, 5), 
+  theme(strip.text = element_text(size = 5.8, face = "bold", color = "black"),
+        plot.margin = margin(5.5, 5.5, 5.5, 5.5), 
         plot.title = element_text(size = 5), 
-        axis.title.x = element_text(size = 5),
-        axis.title.y = element_text(size = 5),
-        axis.text.x = element_text(size = 4, angle = 25),
-        axis.text.y = element_text(size = 4))
+        axis.title.x = element_text(size = 7),
+        axis.title.y = element_text(size = 7),
+        axis.text.x = element_text(size = 5, angle = 25),
+        axis.text.y = element_text(size = 5))
 
 # m-ratio boost by rt
 sdt_ddm %>%
@@ -484,20 +484,20 @@ sdt_ddm %>%
   ggplot() + geom_point(aes(x = nu_tar, y = value, color = index), size = 0.3) +
   geom_line(aes(x = nu_tar, y = value, color = index), size = 0.3) +
   geom_hline(yintercept = 1, linetype = "dashed", size = 0.3) + theme(legend.position = "top") +
-  scale_color_manual(values = c("#FFC425")) +
-  ylab(expression(paste(meta, "-", d, "'"[confidence+RT]/meta, "-", d, "'"[confidence]))) +
+  scale_color_manual(values = c("#E36414")) +
+  ylab(expression(bold(paste(meta, "-", d, "'"[confidence+RT]/meta, "-", d, "'"[confidence])))) +
   scale_x_continuous(breaks = c(0.0015, 0.0025, 0.0035)) + xlab(expression(bold(paste({ν[target]})))) +
   facet_wrap(~ condition, labeller = label_parsed, nrow = 2) +
-  coord_cartesian(ylim = c(0.95, 1.8)) + scale_y_continuous(breaks = seq(1, 1.8, 0.2)) + ggtitle("2DSD") -> p7_ddm
+  coord_cartesian(ylim = c(0.95, 1.8)) + scale_y_continuous(breaks = seq(1, 1.8, 0.2)) -> p7_ddm
 p7_ddm
 p7_ddm <- p7_ddm + guides(color = F) +
-  theme(strip.text = element_text(size = 4.2, face = "bold", color = "black"),
-        plot.margin = margin(5, 5, 5, 5), 
+  theme(strip.text = element_text(size = 5.8, face = "bold", color = "black"),
+        plot.margin = margin(5.5, 5.5, 5.5, 5.5), 
         plot.title = element_text(size = 5), 
-        axis.title.x = element_text(size = 5),
-        axis.title.y = element_text(size = 5),
-        axis.text.x = element_text(size = 4, angle = 25),
-        axis.text.y = element_text(size = 4))
+        axis.title.x = element_text(size = 7),
+        axis.title.y = element_text(size = 6.3),
+        axis.text.x = element_text(size = 5, angle = 25),
+        axis.text.y = element_text(size = 5))
 
 # correctness x rt x post confidence
 simdat_ddm$rt_bin <- cut(simdat_ddm$rt, breaks = quantile(simdat_ddm$rt, probs = seq(0, 1, by = 0.25)), include.lowest = TRUE)
@@ -514,7 +514,7 @@ simdat_ddm %>%
                                  sz =  as_labeller(c("0.1" = "s[z] == 0.1", "0.6" = "s[z] == 0.6"), label_parsed))) +
   xlab("RT quantile") + ylab("Mean confidence") + scale_color_npg(guide = guide_legend(override.aes = list(color = "white"))) +
   theme(axis.title = element_text(size = 7), legend.position = "top", plot.title = element_text(size = 7),
-        strip.text = element_text(size = 7, margin = margin(-0.5, -0.5, -0.5, -0.5, "pt"))) + ggtitle("2DSD") -> p8_ddm
+        strip.text = element_text(size = 7, margin = margin(-0.5, -0.5, -0.5, -0.5, "pt"))) -> p8_ddm
 p8_ddm
 p8_ddm <- p8_ddm + theme(strip.text = element_text(size = 6.5, face = "bold"),
                          plot.margin = margin(5, 5, 5, 5), 
@@ -542,7 +542,7 @@ simdat_ddm %>%
   theme(legend.position = "top") + labs(color = "RT bin") +
   xlab("Confidence bin") + ylab("Accuracy") + coord_cartesian(ylim = c(0.5, 1)) +
   theme(axis.title = element_text(size = 7), legend.position = "top", plot.title = element_text(size = 7),
-        strip.text = element_text(size = 7, margin = margin(-0.5, -0.5, -0.5, -0.5, "pt"))) + ggtitle("2DSD") -> p9_ddm
+        strip.text = element_text(size = 7, margin = margin(-0.5, -0.5, -0.5, -0.5, "pt"))) -> p9_ddm
 p9_ddm
 
 # accuracy x rt x post confidence (binned for each condition)
@@ -575,10 +575,8 @@ simdat_ddm_bin %>%
   xlab("Confidence bin") + ylab("Accuracy") + coord_cartesian(ylim = c(0.5, 1)) +
   theme(axis.title = element_text(size = 7), legend.position = "top", plot.title = element_text(size = 7),
         strip.text = element_text(size = 7, margin = margin(-0.5, -0.5, -0.5, -0.5, "pt")),
-        plot.margin = unit(c(1, 1, 1, 1), "pt")) + ggtitle("2DSD") -> p10_ddm
+        plot.margin = unit(c(1, 1, 1, 1), "pt")) -> p10_ddm
 p10_ddm
-p10_ddm <- p10_ddm + guides(color = F)
-sjPlot::save_plot("p10_ddm.png", p10_ddm, width = 15, height = 15, dpi = 300)
 
 # RT only
 simdat_ddm_bin %>%
@@ -596,7 +594,7 @@ simdat_ddm_bin %>%
   xlab("RT bin") + ylab("Accuracy") + coord_cartesian(ylim = c(0.5, 1)) +
   theme(axis.title = element_text(size = 7), legend.position = "top", plot.title = element_text(size = 7),
         strip.text = element_text(size = 7, margin = margin(-0.5, -0.5, -0.5, -0.5, "pt")),
-        plot.margin = unit(c(1, 1, 1, 1), "pt")) + ggtitle("2DSD")
+        plot.margin = unit(c(1, 1, 1, 1), "pt"))
 
 # Confidence only
 simdat_ddm_bin %>%
@@ -613,14 +611,15 @@ simdat_ddm_bin %>%
   xlab("Confidence bin") + ylab("Accuracy") + coord_cartesian(ylim = c(0.5, 1)) +
   theme(axis.title = element_text(size = 7), legend.position = "top", plot.title = element_text(size = 7),
         strip.text = element_text(size = 7, margin = margin(-0.5, -0.5, -0.5, -0.5, "pt")),
-        plot.margin = unit(c(1, 1, 1, 1), "pt")) + ggtitle("2DSD")
+        plot.margin = unit(c(1, 1, 1, 1), "pt"))
 
 # type-1 roc
 roc_1_ddm %>% filter(variable != "be" & variable != "logit_be") %>%
   mutate(variable = fct_recode(variable, "confidence" = "post", "RT" = "RT", "logit" = "logit_post"),
          variable = fct_relevel(variable, "confidence", "RT", "logit")) %>%
-  ggplot() + geom_point(aes(x = far_1, y = hr_1, color = factor(variable), size = factor(variable)), alpha = 0.7, show.legend = F) +
-  scale_size_manual(values = c("confidence" = 1.2, "RT" = 0.5, "logit" = 0.5)) +  
+  ggplot() + geom_point(aes(x = far_1, y = hr_1, color = factor(variable), size = factor(variable)), alpha = 0.7) +
+  guides(size = "none", color = guide_legend(override.aes = list(size = 2))) +
+  scale_size_manual(values = c("confidence" = 1.8, "RT" = 0.8, "logit" = 0.8)) +  
   geom_line(roc_1_sdt_ddm, mapping = aes(x = far_1, y = hr_1), linetype = "dashed") +
   scale_color_manual(values = c(hue_pal()(3)), guide = guide_legend(override.aes = list(color = "white"))) +
   facet_wrap(. ~ nu_tar + eta + sz, ncol = 4,
@@ -628,22 +627,23 @@ roc_1_ddm %>% filter(variable != "be" & variable != "logit_be") %>%
                                                            "0.0035" = "ν[target] == 0.0035"), label_parsed),
                                  eta = as_labeller(c("0.0005" = "η == 0.0005", "0.005" = "η == 0.005"), label_parsed),
                                  sz = as_labeller(c("0.1" = "s[z] == 0.1", "0.6" = "s[z] == 0.6"), label_parsed))) +
-  xlab("p(response = S2|stimulus = S1)") + ylab("p(response = S2|stimulus = S2)") + labs(color = "Variable") + 
+  xlab("p(Resp = S2|Stim = S1)") + ylab("p(Resp = S2|Stim = S2)") + labs(color = "Variable") + 
   scale_x_continuous(breaks = c(0, 0.5, 1)) + scale_y_continuous(breaks = c(0, 0.5, 1)) +
   theme(axis.title = element_text(size = 7), legend.position = "top", plot.title = element_text(size = 7),
-        strip.text = element_text(size = 7, margin = margin(-0.5, -0.5, -0.5, -0.5, "pt"))) + ggtitle("2DSD") -> p11_ddm
+        strip.text = element_text(size = 7, margin = margin(-0.5, -0.5, -0.5, -0.5, "pt"))) -> p11_ddm
 p11_ddm
 p11_ddm <- p11_ddm + theme(axis.text.x = element_text(angle = 25),
                            strip.text = element_text(size = 6.5, face = "bold"),
                            plot.margin = margin(5, 5, 5, 5), 
-                           plot.title = element_text(size = 8)) + guides(color = F)
+                           plot.title = element_text(size = 8))
 
 # type-2 roc
 roc_2_ddm %>% filter(variable != "be" & variable != "logit_be") %>%
   mutate(variable = fct_recode(variable, "confidence" = "post", "RT" = "RT", "logit" = "logit_post"),
          variable = fct_relevel(variable, "confidence", "RT", "logit")) %>%
-  ggplot() + geom_point(aes(x = far_2, y = hr_2, color = factor(variable), size = factor(variable)), alpha = 0.7, show.legend = F) +
-  scale_size_manual(values = c("confidence" = 1.2, "RT" = 0.5, "logit" = 0.5)) +  
+  ggplot() + geom_point(aes(x = far_2, y = hr_2, color = factor(variable), size = factor(variable)), alpha = 0.7) +
+  guides(size = "none", color = guide_legend(override.aes = list(size = 2))) +
+  scale_size_manual(values = c("confidence" = 1.8, "RT" = 0.8, "logit" = 0.8)) +  
   geom_line(roc_2_sdt_ddm, mapping = aes(x = far_2, y = hr_2), linetype = "dashed") +
   scale_color_manual(values = c(hue_pal()(3)), guide = guide_legend(override.aes = list(color = "white"))) +
   facet_wrap(. ~ nu_tar + eta + sz, ncol = 4,
@@ -651,15 +651,15 @@ roc_2_ddm %>% filter(variable != "be" & variable != "logit_be") %>%
                                                            "0.0035" = "ν[target] == 0.0035"), label_parsed),
                                  eta = as_labeller(c("0.0005" = "η == 0.0005", "0.005" = "η == 0.005"), label_parsed),
                                  sz = as_labeller(c("0.1" = "s[z] == 0.1", "0.6" = "s[z] == 0.6"), label_parsed))) +
-  xlab("p(secondary variable = high|response = incorrect)") + ylab("p(secondary variable = high|response = correct)") + labs(color = "Variable") + 
+  xlab("p(SV = high|Resp = incorrect)") + ylab("p(SV = high|Resp = correct)") + labs(color = "Variable") + 
   scale_x_continuous(breaks = c(0, 0.5, 1)) + scale_y_continuous(breaks = c(0, 0.5, 1)) +
   theme(axis.title = element_text(size = 7), legend.position = "top", plot.title = element_text(size = 7),
-        strip.text = element_text(size = 7, margin = margin(-0.5, -0.5, -0.5, -0.5, "pt"))) + ggtitle("2DSD") -> p12_ddm
+        strip.text = element_text(size = 7, margin = margin(-0.5, -0.5, -0.5, -0.5, "pt"))) -> p12_ddm
 p12_ddm
 p12_ddm <- p12_ddm + theme(axis.text.x = element_text(angle = 25),
                            strip.text = element_text(size = 6.5, face = "bold"),
                            plot.margin = margin(5, 5, 5, 5), 
-                           plot.title = element_text(size = 8)) + guides(color = F)
+                           plot.title = element_text(size = 8))
 
 # mean early confidence
 simdat_ddm %>%
@@ -675,4 +675,40 @@ simdat_ddm %>%
 p13_ddm <- p13_ddm + guides(color = F) + theme(axis.text.x  = element_text(angle = 20))
 p13_ddm
 
+# interaction
+simdat_ddm$rt_bin <- cut(simdat_ddm$rt, breaks = quantile(simdat_ddm$rt, probs = seq(0, 1, 0.05)), labels = 1:20, include.lowest = TRUE)
+simdat_ddm$rt_bin <- as.numeric(simdat_ddm$rt_bin)
+simdat_ddm$conf_bin <- cut(simdat_ddm$post_conf, breaks = quantile(simdat_ddm$post_conf, probs = seq(0, 1, 1/3)), include.lowest = TRUE)
+levels(simdat_ddm$conf_bin) <- c("q1", "q2", "q3")
+simdat_ddm %>%
+ # group_by(nu_tar, eta, sz, rt_bin, conf_bin) %>%
+ #  summarise(accuracy = mean(correct)) %>%
+  ggplot(aes(x = rt_bin, y = correct, color = conf_bin)) + 
+#  geom_line(aes(x = rt_bin, y = accuracy, color = conf_bin, group = conf_bin), size = 0.3) +
+#  geom_point(aes(x = rt_bin, y = accuracy, color = conf_bin), size = 0.7) +
+  geom_smooth(method = "loess", se = TRUE, size = 0.5) +
+  scale_color_manual(values = c("#3300CC", "#7900FF", "#FF0077")) +
+  facet_wrap(~ nu_tar + eta + sz, ncol = 4,
+             labeller = labeller(nu_tar = as_labeller(c("0.0015" = "ν[target] == 0.0015", "0.0025" = "ν[target] == 0.0025", "0.0035" = "ν[target] == 0.0035"), label_parsed),
+                                 eta =  as_labeller(c("0.0005" = "η == 0.0005", "0.005" = "η == 0.005"), label_parsed),
+                                 sz =  as_labeller(c("0.1" = "s[z] == 0.1", "0.6" = "s[z] == 0.6"), label_parsed))) +
+  labs(color = "Confidence bin") +
+  xlab("RT bin") + ylab("Accuracy") + coord_cartesian(ylim = c(0.5, 1)) +
+  theme(axis.title = element_text(size = 7), legend.position = "top", plot.title = element_text(size = 7),
+        strip.text = element_text(size = 7, margin = margin(-0.5, -0.5, -0.5, -0.5, "pt"))) -> p14_ddm
+
+
 # write.csv(simdat_ddm, "simdat_ddm.csv", row.names =  F)
+
+save_plot("figure_6a.jpg", p1_ddm, width = 5, height = 4.1)
+save_plot("figure_6b.jpg", p3_ddm, width = 5, height = 4.1)
+save_plot("figure_6c.jpg", p4_ddm, width = 5, height = 4.1)
+
+save_plot("figure_7a.jpg", p5_ddm, width = 5.5, height = 4.1)
+save_plot("figure_7b.jpg", p6_ddm, width = 5.5, height = 4.1)
+save_plot("figure_7c.jpg", p7_ddm, width = 5.5, height = 4.1)
+
+save_plot("figure_8.jpg", p14_ddm, width = 12, height = 12.5)
+save_plot("figure_a4.png", p11_ddm, width = 12, height = 12.5)
+save_plot("figure_a5.png", p12_ddm, width = 12, height = 12.5)
+save_plot("figure_a6.png", p2_ddm)

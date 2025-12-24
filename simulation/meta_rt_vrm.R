@@ -322,13 +322,13 @@ p1_vrm <- p1_vrm + guides(color = F) + theme(legend.text = element_text(size = 3
                                              legend.direction = "horizontal",
                                              legend.background = element_rect(fill = NA, colour = NA),
                                              legend.key = element_rect(fill = NA),
-                                             strip.text = element_text(size = 4.2, face = "bold", color = "black"),
-                                             plot.margin = margin(5, 5, 5, 5), 
+                                             strip.text = element_text(size = 5.8, face = "bold", color = "black"),
+                                             plot.margin = margin(5.5, 5.5, 5.5, 5.5), 
                                              plot.title = element_text(size = 5), 
-                                             axis.title.x = element_text(size = 5),
-                                             axis.title.y = element_text(size = 5),
-                                             axis.text.x = element_text(size = 4, angle = 25),
-                                             axis.text.y = element_text(size = 4))
+                                             axis.title.x = element_text(size = 7),
+                                             axis.title.y = element_text(size = 7),
+                                             axis.text.x = element_text(size = 5, angle = 25),
+                                             axis.text.y = element_text(size = 5))
 
 # RT histogram
 simdat_vrm %>%
@@ -372,13 +372,13 @@ p3_vrm <- p3_vrm + guides(color = F) + theme(legend.text = element_text(size = 3
                                              legend.direction = "horizontal",
                                              legend.background = element_rect(fill = NA, colour = NA),
                                              legend.key = element_rect(fill = NA),
-                                             strip.text = element_text(size = 4.2, face = "bold", color = "black"),
-                                             plot.margin = margin(5, 5, 5, 5), 
+                                             strip.text = element_text(size = 5.8, face = "bold", color = "black"),
+                                             plot.margin = margin(5.5, 5.5, 5.5, 5.5), 
                                              plot.title = element_text(size = 5), 
-                                             axis.title.x = element_text(size = 5),
-                                             axis.title.y = element_text(size = 5),
-                                             axis.text.x = element_text(size = 4, angle = 25),
-                                             axis.text.y = element_text(size = 4))
+                                             axis.title.x = element_text(size = 7),
+                                             axis.title.y = element_text(size = 7),
+                                             axis.text.x = element_text(size = 5, angle = 25),
+                                             axis.text.y = element_text(size = 5))
 
 # mean BE confidence
 simdat_vrm %>%
@@ -400,13 +400,13 @@ p4_vrm <- p4_vrm + guides(color = F) + theme(legend.text = element_text(size = 3
                                              legend.direction = "horizontal",
                                              legend.background = element_rect(fill = NA, colour = NA),
                                              legend.key = element_rect(fill = NA),
-                                             strip.text = element_text(size = 4.2, face = "bold", color = "black"),
-                                             plot.margin = margin(5, 5, 5, 5), 
+                                             strip.text = element_text(size = 5.8, face = "bold", color = "black"),
+                                             plot.margin = margin(5.5, 5.5, 5.5, 5.5), 
                                              plot.title = element_text(size = 5), 
-                                             axis.title.x = element_text(size = 5),
-                                             axis.title.y = element_text(size = 5),
-                                             axis.text.x = element_text(size = 4, angle = 25),
-                                             axis.text.y = element_text(size = 4))
+                                             axis.title.x = element_text(size = 7),
+                                             axis.title.y = element_text(size = 7),
+                                             axis.text.x = element_text(size = 5, angle = 25),
+                                             axis.text.y = element_text(size = 5))
 
 # mean post confidence
 simdat_vrm %>%
@@ -428,13 +428,13 @@ p5_vrm <- p5_vrm + guides(color = F) + theme(legend.text = element_text(size = 3
                                              legend.direction = "horizontal",
                                              legend.background = element_rect(fill = NA, colour = NA),
                                              legend.key = element_rect(fill = NA),
-                                             strip.text = element_text(size = 4.2, face = "bold", color = "black"),
-                                             plot.margin = margin(5, 5, 5, 5), 
+                                             strip.text = element_text(size = 5.8, face = "bold", color = "black"),
+                                             plot.margin = margin(5.5, 5.5, 5.5, 5.5), 
                                              plot.title = element_text(size = 5), 
-                                             axis.title.x = element_text(size = 5),
-                                             axis.title.y = element_text(size = 5),
-                                             axis.text.x = element_text(size = 4, angle = 25),
-                                             axis.text.y = element_text(size = 4))
+                                             axis.title.x = element_text(size = 7),
+                                             axis.title.y = element_text(size = 7),
+                                             axis.text.x = element_text(size = 5, angle = 25),
+                                             axis.text.y = element_text(size = 5))
 
 # sdt measures (BE)
 sdt_vrm %>%
@@ -816,7 +816,7 @@ roc_1_vrm %>% filter(variable != "post" & variable != "logit_post") %>%
   mutate(variable = fct_recode(variable, "confidence" = "be", "RT" = "RT", "logit" = "logit_be"),
          variable = fct_relevel(variable, "confidence", "RT", "logit")) %>%
   ggplot() + geom_point(aes(x = far_1, y = hr_1, color = factor(variable), size = factor(variable)), alpha = 0.7, show.legend = F) +
-  scale_size_manual(values = c("confidence" = 1.2, "RT" = 0.5, "logit" = 0.5)) +  
+  scale_size_manual(values = c("confidence" = 1.8, "RT" = 0.8, "logit" = 0.8)) +  
   geom_line(roc_1_sdt_vrm, mapping = aes(x = far_1, y = hr_1), linetype = "dashed") +
   scale_color_manual(values = c(hue_pal()(3))) +
   facet_wrap(. ~ nu_tar + eta + sz, ncol = 4,
@@ -840,7 +840,7 @@ roc_2_vrm %>% filter(variable != "post" & variable != "logit_post") %>%
   mutate(variable = fct_recode(variable, "confidence" = "be", "RT" = "RT", "logit" = "logit_be"),
          variable = fct_relevel(variable, "confidence", "RT", "logit")) %>%
   ggplot() + geom_point(aes(x = far_2, y = hr_2, color = factor(variable), size = factor(variable)), alpha = 0.7, show.legend = F) +
-  scale_size_manual(values = c("confidence" = 1.2, "RT" = 0.5, "logit" = 0.5)) +  
+  scale_size_manual(values = c("confidence" = 1.8, "RT" = 0.8, "logit" = 0.8)) +  
   geom_line(roc_2_sdt_vrm, mapping = aes(x = far_2, y = hr_2), linetype = "dashed") +
   scale_color_manual(values = c(hue_pal()(3))) +
   facet_wrap(. ~ nu_tar + eta + sz, ncol = 4,
