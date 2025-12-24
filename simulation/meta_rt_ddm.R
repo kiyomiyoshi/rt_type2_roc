@@ -679,7 +679,7 @@ p13_ddm
 simdat_ddm$rt_bin <- cut(simdat_ddm$rt, breaks = quantile(simdat_ddm$rt, probs = seq(0, 1, 0.05)), labels = 1:20, include.lowest = TRUE)
 simdat_ddm$rt_bin <- as.numeric(simdat_ddm$rt_bin)
 simdat_ddm$conf_bin <- cut(simdat_ddm$post_conf, breaks = quantile(simdat_ddm$post_conf, probs = seq(0, 1, 1/3)), include.lowest = TRUE)
-levels(simdat_ddm$conf_bin) <- c("q1", "q2", "q3")
+levels(simdat_ddm$conf_bin) <- c("1", "2", "3")
 simdat_ddm %>%
   group_by(nu_tar, eta, sz, conf_bin) %>%
   ggplot(aes(x = rt_bin, y = correct, color = conf_bin)) + 
@@ -705,7 +705,7 @@ save_plot("figure_7a.jpg", p5_ddm, width = 5.5, height = 4.1)
 save_plot("figure_7b.jpg", p6_ddm, width = 5.5, height = 4.1)
 save_plot("figure_7c.jpg", p7_ddm, width = 5.5, height = 4.1)
 
-save_plot("figure_8.jpg", p14_ddm, width = 12, height = 11)
+save_plot("figure_8.jpg", p14_ddm, width = 12, height = 11
 save_plot("figure_a4.png", p11_ddm, width = 12, height = 12.5)
 save_plot("figure_a5.png", p12_ddm, width = 12, height = 12.5)
 save_plot("figure_a6.png", p2_ddm)
