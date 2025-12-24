@@ -681,12 +681,9 @@ simdat_ddm$rt_bin <- as.numeric(simdat_ddm$rt_bin)
 simdat_ddm$conf_bin <- cut(simdat_ddm$post_conf, breaks = quantile(simdat_ddm$post_conf, probs = seq(0, 1, 1/3)), include.lowest = TRUE)
 levels(simdat_ddm$conf_bin) <- c("q1", "q2", "q3")
 simdat_ddm %>%
- # group_by(nu_tar, eta, sz, rt_bin, conf_bin) %>%
- #  summarise(accuracy = mean(correct)) %>%
+  group_by(nu_tar, eta, sz, conf_bin) %>%
   ggplot(aes(x = rt_bin, y = correct, color = conf_bin)) + 
-#  geom_line(aes(x = rt_bin, y = accuracy, color = conf_bin, group = conf_bin), size = 0.3) +
-#  geom_point(aes(x = rt_bin, y = accuracy, color = conf_bin), size = 0.7) +
-  geom_smooth(method = "loess", se = TRUE, size = 0.5) +
+  geom_smooth(method = "loess", se = F, size = 0.5) +
   scale_color_manual(values = c("#3300CC", "#7900FF", "#FF0077")) +
   facet_wrap(~ nu_tar + eta + sz, ncol = 4,
              labeller = labeller(nu_tar = as_labeller(c("0.0015" = "ν[target] == 0.0015", "0.0025" = "ν[target] == 0.0025", "0.0035" = "ν[target] == 0.0035"), label_parsed),
@@ -694,7 +691,7 @@ simdat_ddm %>%
                                  sz =  as_labeller(c("0.1" = "s[z] == 0.1", "0.6" = "s[z] == 0.6"), label_parsed))) +
   labs(color = "Confidence bin") +
   xlab("RT bin") + ylab("Accuracy") + coord_cartesian(ylim = c(0.5, 1)) +
-  theme(axis.title = element_text(size = 7), legend.position = "top", plot.title = element_text(size = 7),
+  theme(axis.title = element_text(size = 7), legend.position = "top",
         strip.text = element_text(size = 7, margin = margin(-0.5, -0.5, -0.5, -0.5, "pt"))) -> p14_ddm
 
 
@@ -708,7 +705,7 @@ save_plot("figure_7a.jpg", p5_ddm, width = 5.5, height = 4.1)
 save_plot("figure_7b.jpg", p6_ddm, width = 5.5, height = 4.1)
 save_plot("figure_7c.jpg", p7_ddm, width = 5.5, height = 4.1)
 
-save_plot("figure_8.jpg", p14_ddm, width = 12, height = 12.5)
+save_plot("figure_8.jpg", p14_ddm, width = 12, height = 11)
 save_plot("figure_a4.png", p11_ddm, width = 12, height = 12.5)
 save_plot("figure_a5.png", p12_ddm, width = 12, height = 12.5)
 save_plot("figure_a6.png", p2_ddm)
