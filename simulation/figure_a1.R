@@ -50,7 +50,7 @@ accum[(rt_ddm + 150):nrow(accum), "BE"] <- NA
 
 g1 <- ggplot(accum[1:2000, ]) + 
   geom_line(aes(x = t, y = E1), color = "red", size = 0.3) + ylab("Evidence for S1") +
-  geom_hline(yintercept = 2, linetype = "dashed", size = 0.3) +
+# geom_hline(yintercept = 2, linetype = "dashed", size = 0.3) +
   scale_x_continuous(breaks = c(0, 1000, 2000)) + ylim(-0.5, 2.2) + 
   theme(axis.title.x = element_text(size = 5, margin = margin(t = -2, unit = "pt")),
         axis.title.y = element_text(size = 5),
@@ -61,7 +61,7 @@ g1 <- ggplot(accum[1:2000, ]) +
 
 g2 <- ggplot(accum[1:2000, ]) + 
   geom_line(aes(x = t, y = E2), color = "blue", size = 0.3) + ylab("Evidence for S2") +
-  geom_hline(yintercept = 2, linetype = "dashed", size = 0.3) +
+# geom_hline(yintercept = 2, linetype = "dashed", size = 0.3) +
   scale_x_continuous(breaks = c(0, 1000, 2000)) + ylim(-0.5, 2.2) + labs(color = NULL) +
   theme(axis.title.x = element_text(size = 5, margin = margin(t = -2, unit = "pt")),
         axis.title.y = element_text(size = 5),
@@ -71,7 +71,7 @@ g2 <- ggplot(accum[1:2000, ]) +
         plot.margin = margin(3.1, 3.1, 3.1, 3.1, unit = "pt"))
 
 g3 <- ggplot(accum[1:2000, ]) + 
-  geom_line(aes(x = t, y = BE), color = "purple", size = 0.3) + ylab("Balance of evidence") +
+  geom_line(aes(x = t, y = BE), color = "purple", size = 0.3) + ylab("Relative evidence (S1-S2)") +
   geom_hline(yintercept =  1.2, linetype = "dashed", size = 0.3) +
   geom_hline(yintercept = -1.2, linetype = "dashed", size = 0.3) +
   annotate("rect", xmin = rt_ddm, xmax = rt_ddm + 150, ymin = -1.55, ymax = 1.55, alpha = 0.2, fill = "grey") +
@@ -82,10 +82,10 @@ g3 <- ggplot(accum[1:2000, ]) +
         axis.text.x = element_text(angle = 35),
         panel.grid.major = element_blank(), 
         panel.grid.minor = element_blank(),
-        plot.margin = margin(3.1, 3.1, 3.1, 3.1, unit = "pt"))
+        plot.margin = margin(3.3, 3.3, 3.3, 3.3, unit = "pt"))
 g3
 
-figure_a1 <- plot_grid(g1, g2, g3, ncol = 3, scale = 1)
+figure_a1 <- plot_grid(g3, g1, g2, ncol = 3, scale = 0.97)
 figure_a1
-sjPlot::save_plot("Figure_a1.jpg", figure_1a, width = 9, height = 2.5, dpi = 300)
+sjPlot::save_plot("Figure_a1.jpg", figure_a1, width = 9, height = 2.75, dpi = 400)
 # write.csv(accum, "figure_a1.csv")

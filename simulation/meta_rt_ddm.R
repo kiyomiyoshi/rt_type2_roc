@@ -14,6 +14,7 @@ library(car)
 library(scales)
 library(ggeffects)
 library(ggh4x)
+library(patchwork)
 
 source("theme_publication.R")
 theme_set(theme_publication()) 
@@ -300,35 +301,40 @@ simdat_ddm %>%
   mutate(p = ifelse(choice == "target", n[choice == "target"] / n(),
                     n[choice == "distractor"] / n())) %>%
   distinct(nu_tar, eta, sz, choice, n, p) %>%
-  mutate(condition = ifelse(eta == 5e-04 & sz == 0.1, "η == 0.0005 ~ phantom(',') ~ s[z] == 0.1",
-                            ifelse(eta == 5e-04 & sz == 0.6, "η == 0.0005 ~ phantom(',') ~ s[z] == 0.6",
-                                   ifelse(eta == 0.005 & sz == 0.1, "η == 0.005 ~ phantom(',') ~ s[z] == 0.1",
-                                          "η == 0.005 ~ phantom(',') ~ s[z] == 0.6")))) %>%
-  ggplot() + geom_line(aes(x = nu_tar, y = p, color = choice), size = 0.3) + 
-  geom_point(aes(x = nu_tar, y = p, color = factor(choice)), size = 0.3) + 
-  ylab("Choice proportion") +
-  scale_color_discrete(labels = c("target", "distractor")) + labs(color = "choice") +
-  scale_x_continuous(breaks = c(0.0015, 0.0025, 0.0035)) + xlab(expression(bold(paste({ν[target]})))) +
+  ggplot() + geom_line(aes(x = nu_tar, y = p, color = choice), size = 0.25) + 
+  geom_point(aes(x = nu_tar, y = p, color = factor(choice)), size = 0.25) + 
+  facet_wrap(~ eta + sz, ncol = 2,
+             labeller = labeller( eta =  as_labeller(c("0.0005" = "η == 0.0005", "0.005" = "η == 0.005"), label_parsed),
+                                  sz =  as_labeller(c("0.1" = "s[z] == 0.1", "0.6" = "s[z] == 0.6"), label_parsed))) +
   theme(legend.text = element_text(size = 7),
         legend.position = "top", 
         legend.direction = "horizontal",
         legend.background = element_rect(fill = NA, colour = NA),
-        legend.key = element_rect(fill = NA)) +
-  facet_wrap(~ condition, labeller = label_parsed, nrow = 2)  +
-  scale_color_npg() + coord_cartesian(ylim = c(0, 1)) -> p1_ddm
-p1_ddm
+        legend.key = element_rect(fill = NA),
+        legend.title = element_text(size = 8),
+        strip.text = element_text(size = 7, margin = margin(-0.2, -0.2, -0.2, -0.2, "pt"))) +
+  scale_color_discrete(labels = c("target", "distractor")) + labs(color = "choice") +
+  scale_x_continuous(breaks = c(0.0015, 0.0025, 0.0035)) + xlab(expression(bold(paste({ν[target]})))) +
+  guides(color = guide_legend(override.aes = list(size = 2))) +
+  scale_color_npg() + coord_cartesian(ylim = c(0, 1)) + scale_y_continuous(breaks = seq(0, 1, 0.5)) + ylab("Choice proportion") +
+  labs(color = "Choice") -> p1_ddm
+
 p1_ddm <- p1_ddm + guides(color = F) + theme(legend.text = element_text(size = 3),
                                              legend.position = "top", 
                                              legend.direction = "horizontal",
                                              legend.background = element_rect(fill = NA, colour = NA),
                                              legend.key = element_rect(fill = NA),
-                                             strip.text = element_text(size = 5.8, face = "bold", color = "black"),
-                                             plot.margin = margin(5.5, 5.5, 5.5, 5.5), 
-                                             plot.title = element_text(size = 5), 
-                                             axis.title.x = element_text(size = 7),
-                                             axis.title.y = element_text(size = 7),
-                                             axis.text.x = element_text(size = 5, angle = 25),
-                                             axis.text.y = element_text(size = 5))
+                                             strip.text = element_text(size = 3.5, face = "bold", color = "black"),
+                                             plot.margin = margin(1, 3.5, 0.5, 1), 
+                                             plot.title = element_text(size = 4), 
+                                             axis.title.x = element_text(size = 4, margin = margin(t = -2)),
+                                             axis.title.y = element_text(size = 4, margin = margin(r = -0.5)),
+                                             axis.text.x = element_text(size = 3, angle = 25),
+                                             axis.text.y = element_text(size = 3),
+                                             axis.line        = element_line(linewidth = 0.2),
+                                             axis.ticks       = element_line(linewidth = 0.2),
+                                             panel.grid.major = element_line(linewidth = 0.15),
+                                             panel.grid.minor = element_line(linewidth = 0.1))
 
 # RT histogram
 simdat_ddm %>%
@@ -346,7 +352,7 @@ simdat_ddm %>%
   scale_fill_npg() + scale_color_npg() + 
   theme(axis.title = element_text(size = 7), legend.position = "top", plot.title = element_text(size = 7),
         strip.text = element_text(size = 7, margin = margin(-0.5, -0.5, -0.5, -0.5, "pt"))) -> p2_ddm
-p2_ddm 
+
 p2_ddm <- p2_ddm + 
   theme(strip.text = element_text(size = 6.5, face = "bold"),
         plot.margin = margin(5, 5, 5, 5), 
@@ -356,57 +362,77 @@ p2_ddm <- p2_ddm +
 simdat_ddm %>%
   group_by(choice, nu_tar, eta, sz) %>%
   summarise(mean_rt = mean(rt)) %>%
-  mutate(condition = ifelse(eta == 5e-04 & sz == 0.1, "η == 0.0005 ~ phantom(',') ~ s[z] == 0.1",
-                            ifelse(eta == 5e-04 & sz == 0.6, "η == 0.0005 ~ phantom(',') ~ s[z] == 0.6",
-                                   ifelse(eta == 0.005 & sz == 0.1, "η == 0.005 ~ phantom(',') ~ s[z] == 0.1",
-                                          "η == 0.005 ~ phantom(',') ~ s[z] == 0.6")))) %>%
-  ggplot() + geom_line(aes(x = nu_tar, y = mean_rt / 1000, color = factor(choice)), size = 0.32) +
-  geom_point(aes(x = nu_tar, y = mean_rt / 1000, color = factor(choice)), size = 0.32) +
+  ggplot() + geom_line(aes(x = nu_tar, y = mean_rt / 1000, color = factor(choice)), size = 0.25) +
+  geom_point(aes(x = nu_tar, y = mean_rt / 1000, color = factor(choice)), size = 0.25) +
+  facet_wrap(~ eta + sz, ncol = 2,
+             labeller = labeller( eta =  as_labeller(c("0.0005" = "η == 0.0005", "0.005" = "η == 0.005"), label_parsed),
+                                  sz =  as_labeller(c("0.1" = "s[z] == 0.1", "0.6" = "s[z] == 0.6"), label_parsed))) +
+  theme(legend.text = element_text(size = 7),
+        legend.position = "top", 
+        legend.direction = "horizontal",
+        legend.background = element_rect(fill = NA, colour = NA),
+        legend.key = element_rect(fill = NA),
+        legend.title = element_text(size = 8),
+        strip.text = element_text(size = 7, margin = margin(-0.2, -0.2, -0.2, -0.2, "pt"))) +
   scale_color_discrete(labels = c("target", "distractor")) + labs(color = "choice") +
   scale_x_continuous(breaks = c(0.0015, 0.0025, 0.0035)) + xlab(expression(bold(paste({ν[target]})))) +
-  facet_wrap(~ condition, labeller = label_parsed, nrow = 2)  +
-  ylab("Mean RT (s)") + scale_color_npg() + coord_cartesian(ylim = c(0.5, 1.5)) -> p3_ddm
-p3_ddm
+  guides(color = guide_legend(override.aes = list(size = 2))) +
+  ylab("Mean RT (s)") + scale_color_npg() + coord_cartesian(ylim = c(0.55, 1.05)) +
+  scale_y_continuous(breaks = seq(0.6, 1, 0.2)) -> p3_ddm
+
 p3_ddm <- p3_ddm + guides(color = F) + theme(legend.text = element_text(size = 3),
                                              legend.position = "top", 
                                              legend.direction = "horizontal",
                                              legend.background = element_rect(fill = NA, colour = NA),
                                              legend.key = element_rect(fill = NA),
-                                             strip.text = element_text(size = 5.8, face = "bold", color = "black"),
-                                             plot.margin = margin(5.5, 5.5, 5.5, 5.5), 
-                                             plot.title = element_text(size = 5), 
-                                             axis.title.x = element_text(size = 7),
-                                             axis.title.y = element_text(size = 7),
-                                             axis.text.x = element_text(size = 5, angle = 25),
-                                             axis.text.y = element_text(size = 5))
+                                             strip.text = element_text(size = 3.5, face = "bold", color = "black"),
+                                             plot.margin = margin(1, 3.5, 0.5, 1), 
+                                             plot.title = element_text(size = 4), 
+                                             axis.title.x = element_text(size = 4, margin = margin(t = -2)),
+                                             axis.title.y = element_text(size = 4, margin = margin(r = -0.5)),
+                                             axis.text.x = element_text(size = 3, angle = 25),
+                                             axis.text.y = element_text(size = 3),
+                                             axis.line        = element_line(linewidth = 0.2),
+                                             axis.ticks       = element_line(linewidth = 0.2),
+                                             panel.grid.major = element_line(linewidth = 0.15),
+                                             panel.grid.minor = element_line(linewidth = 0.1))
 
 # mean post confidence
 simdat_ddm %>%
   group_by(choice, nu_tar, eta, sz) %>%
   mutate(mean_conf = mean(post_conf)) %>%
-  mutate(condition = ifelse(eta == 5e-04 & sz == 0.1, "η == 0.0005 ~ phantom(',') ~ s[z] == 0.1",
-                            ifelse(eta == 5e-04 & sz == 0.6, "η == 0.0005 ~ phantom(',') ~ s[z] == 0.6",
-                                   ifelse(eta == 0.005 & sz == 0.1, "η == 0.005 ~ phantom(',') ~ s[z] == 0.1",
-                                          "η == 0.005 ~ phantom(',') ~ s[z] == 0.6")))) %>%
-  ggplot() + geom_line(aes(x = nu_tar, y = mean_conf, color = factor(choice)), size = 0.3) +
-  geom_point(aes(x = nu_tar, y = mean_conf, color = factor(choice)), size = 0.3) +
+  ggplot() + geom_line(aes(x = nu_tar, y = mean_conf, color = factor(choice)), size = 0.25) +
+  geom_point(aes(x = nu_tar, y = mean_conf, color = factor(choice)), size = 0.25) +
+  facet_wrap(~ eta + sz, ncol = 2,
+             labeller = labeller( eta =  as_labeller(c("0.0005" = "η == 0.0005", "0.005" = "η == 0.005"), label_parsed),
+                                  sz =  as_labeller(c("0.1" = "s[z] == 0.1", "0.6" = "s[z] == 0.6"), label_parsed))) +
+  theme(legend.text = element_text(size = 7),
+        legend.position = "top", 
+        legend.direction = "horizontal",
+        legend.background = element_rect(fill = NA, colour = NA),
+        legend.key = element_rect(fill = NA),
+        legend.title = element_text(size = 8),
+        strip.text = element_text(size = 7, margin = margin(-0.2, -0.2, -0.2, -0.2, "pt"))) +
   scale_color_discrete(labels = c("target", "distractor")) + labs(color = "choice") +
   scale_x_continuous(breaks = c(0.0015, 0.0025, 0.0035)) + xlab(expression(bold(paste({ν[target]})))) +
-  facet_wrap(~ condition, labeller = label_parsed, nrow = 2)  +
   ylab("Mean confidence") + scale_color_npg() + coord_cartesian(ylim = c(-0.5, 1.2)) -> p4_ddm
-p4_ddm
+
 p4_ddm <- p4_ddm + guides(color = F) + theme(legend.text = element_text(size = 3),
                                              legend.position = "top", 
                                              legend.direction = "horizontal",
                                              legend.background = element_rect(fill = NA, colour = NA),
                                              legend.key = element_rect(fill = NA),
-                                             strip.text = element_text(size = 5.8, face = "bold", color = "black"),
-                                             plot.margin = margin(5.5, 5.5, 5.5, 5.5), 
-                                             plot.title = element_text(size = 5), 
-                                             axis.title.x = element_text(size = 7),
-                                             axis.title.y = element_text(size = 7),
-                                             axis.text.x = element_text(size = 5, angle = 25),
-                                             axis.text.y = element_text(size = 5))
+                                             strip.text = element_text(size = 3.5, face = "bold", color = "black"),
+                                             plot.margin = margin(1, 3.5, 0.5, 1), 
+                                             plot.title = element_text(size = 4), 
+                                             axis.title.x = element_text(size = 4, margin = margin(t = -2)),
+                                             axis.title.y = element_text(size = 4, margin = margin(r = -0.5)),
+                                             axis.text.x = element_text(size = 3, angle = 25),
+                                             axis.text.y = element_text(size = 3),
+                                             axis.line        = element_line(linewidth = 0.2),
+                                             axis.ticks       = element_line(linewidth = 0.2),
+                                             panel.grid.major = element_line(linewidth = 0.15),
+                                             panel.grid.minor = element_line(linewidth = 0.1))
 
 # sdt measures
 sdt_ddm %>%
@@ -415,34 +441,42 @@ sdt_ddm %>%
   mutate(index = fct_recode(index, "d'" = "dp", "meta-d' confidence" = "mdp_post", 
                             "meta-d' RT" = "mdp_rt", "meta-d' logit" = "mdp_logit_post"),
          index = fct_relevel(index, "d'", "meta-d' confidence", "meta-d' RT", "meta-d' logit")) %>%
-  mutate(condition = ifelse(eta == 5e-04 & sz == 0.1, "η == 0.0005 ~ phantom(',') ~ s[z] == 0.1",
-                            ifelse(eta == 5e-04 & sz == 0.6, "η == 0.0005 ~ phantom(',') ~ s[z] == 0.6",
-                                   ifelse(eta == 0.005 & sz == 0.1, "η == 0.005 ~ phantom(',') ~ s[z] == 0.1",
-                                          "η == 0.005 ~ phantom(',') ~ s[z] == 0.6")))) %>%
-  ggplot() +  geom_point(aes(x = nu_tar, y = value, color = index, size = index), show.legend = FALSE) + 
-  scale_size_manual(values = c("d'" = 0.3, "meta-d' confidence" = 0.8, "meta-d' RT" = 0.3, "meta-d' logit" = 0.3)) + labs(color = "Index") +
-  geom_line(aes(x = nu_tar, y = value, color = index, linetype = ifelse(index == "d'", "solid", "dashed")), size = 0.3, show.legend = FALSE) + 
-  theme(legend.position = "top") + ylab("meta-d'") +
+  ggplot() +  geom_point(aes(x = nu_tar, y = value, color = index, size = index)) + 
+  scale_size_manual(values = c("d'" = 0.25, "meta-d' confidence" = 0.8, "meta-d' RT" = 0.25, "meta-d' logit" = 0.25)) + labs(color = "Index") +
+  geom_line(aes(x = nu_tar, y = value, color = index, linetype = ifelse(index == "d'", "solid", "dashed")), size = 0.25) +
+  guides(size = "none", linetype = "none", color = guide_legend(override.aes = list(size = 2))) +
+  facet_wrap(~ eta + sz, ncol = 2,
+             labeller = labeller( eta =  as_labeller(c("0.0005" = "η == 0.0005", "0.005" = "η == 0.005"), label_parsed),
+                                  sz =  as_labeller(c("0.1" = "s[z] == 0.1", "0.6" = "s[z] == 0.6"), label_parsed))) +
+  theme(legend.text = element_text(size = 7),
+        legend.position = "top", 
+        legend.direction = "horizontal",
+        legend.background = element_rect(fill = NA, colour = NA),
+        legend.key = element_rect(fill = NA),
+        legend.title = element_text(size = 8),
+        strip.text = element_text(size = 7, margin = margin(-0.2, -0.2, -0.2, -0.2, "pt"))) +
   scale_color_manual(values = c("black", hue_pal()(3))) +
-  scale_x_continuous(breaks = c(0.0015, 0.0025, 0.0035)) + xlab(expression(bold(paste({ν[target]})))) +
-  facet_wrap(~ condition, labeller = label_parsed, nrow = 2, scales = "free_y") -> p5_ddm
+  scale_x_continuous(breaks = c(0.0015, 0.0025, 0.0035)) + xlab(expression(bold(paste({ν[target]})))) + ylab("meta-d'") +
+  theme(legend.key = element_rect(fill = "transparent", color = NA)) + labs(color = "Variable") +
+  theme(legend.position = "none") -> p5_ddm
 p5_ddm
 
-position_scales <- list(
-  scale_y_continuous(limits = c(-1, 4.2), breaks = -1:4),
-  scale_y_continuous(limits = c(-1, 4.2), breaks = -1:4),
-  scale_y_continuous(limits = c(0, 1), breaks = seq(0, 1, 0.25)),
-  scale_y_continuous(limits = c(0, 1), breaks = seq(0, 1, 0.25)))
-
-p5_ddm <- p5_ddm + facetted_pos_scales(y = position_scales) + 
-  guides(color = F) +
-  theme(strip.text = element_text(size = 5.8, face = "bold", color = "black"),
-        plot.margin = margin(5.5, 5.5, 5.5, 5.5), 
-        plot.title = element_text(size = 5), 
-        axis.title.x = element_text(size = 7),
-        axis.title.y = element_text(size = 7),
-        axis.text.x = element_text(size = 5, angle = 25),
-        axis.text.y = element_text(size = 5))
+p5_ddm <- p5_ddm + guides(color = F) + theme(legend.text = element_text(size = 3),
+                                             legend.position = "top", 
+                                             legend.direction = "horizontal",
+                                             legend.background = element_rect(fill = NA, colour = NA),
+                                             legend.key = element_rect(fill = NA),
+                                             strip.text = element_text(size = 3.5, face = "bold", color = "black"),
+                                             plot.margin = margin(1.5, 3.5, 0.5, 1.5), 
+                                             plot.title = element_text(size = 4), 
+                                             axis.title.x = element_text(size = 4, margin = margin(t = -2)),
+                                             axis.title.y = element_text(size = 4, margin = margin(r = -0.5)),
+                                             axis.text.x = element_text(size = 3, angle = 25),
+                                             axis.text.y = element_text(size = 3),
+                                             axis.line        = element_line(linewidth = 0.2),
+                                             axis.ticks       = element_line(linewidth = 0.2),
+                                             panel.grid.major = element_line(linewidth = 0.15),
+                                             panel.grid.minor = element_line(linewidth = 0.1))
 
 # m-ratio
 sdt_ddm %>%
@@ -450,54 +484,77 @@ sdt_ddm %>%
                names_to = "index", values_to = "value") %>%
   mutate(index = fct_recode(index, "m-ratio confidence" = "mratio_post", "m-ratio RT" = "mratio_rt", "m-ratio logit" = "mratio_logit_post"),
          index = fct_relevel(index, "m-ratio confidence", "m-ratio RT", "m-ratio logit")) %>%
-  mutate(condition = ifelse(eta == 5e-04 & sz == 0.1, "η == 0.0005 ~ phantom(',') ~ s[z] == 0.1",
-                            ifelse(eta == 5e-04 & sz == 0.6, "η == 0.0005 ~ phantom(',') ~ s[z] == 0.6",
-                                   ifelse(eta == 0.005 & sz == 0.1, "η == 0.005 ~ phantom(',') ~ s[z] == 0.1",
-                                          "η == 0.005 ~ phantom(',') ~ s[z] == 0.6")))) %>%
-  ggplot() + geom_hline(yintercept = 1, linetype = "dashed", size = 0.3) +
-  geom_point(aes(x = nu_tar, y = value, color = index, size = index), show.legend = FALSE) + 
-  scale_size_manual(values = c("m-ratio confidence" = 0.8, "m-ratio RT" = 0.3, "m-ratio logit" = 0.3)) + labs(color = "Index") +
-  geom_line(aes(x = nu_tar, y = value, color = index), size = 0.3) +
-  scale_color_manual(values = c(hue_pal()(3))) + ylab("m-ratio") +
-  theme(legend.position = "top") +
-  scale_x_continuous(breaks = c(0.0015, 0.0025, 0.0035)) + xlab(expression(bold(paste({ν[target]})))) +
-  facet_wrap(~ condition, labeller = label_parsed, nrow = 2) +
-  coord_cartesian(ylim = c(-0.3, 1.1)) + scale_y_continuous(breaks = seq(-0.2, 1, 0.4)) -> p6_ddm
-p6_ddm
-p6_ddm <- p6_ddm + guides(color = F) +
-  theme(strip.text = element_text(size = 5.8, face = "bold", color = "black"),
-        plot.margin = margin(5.5, 5.5, 5.5, 5.5), 
-        plot.title = element_text(size = 5), 
-        axis.title.x = element_text(size = 7),
-        axis.title.y = element_text(size = 7),
-        axis.text.x = element_text(size = 5, angle = 25),
-        axis.text.y = element_text(size = 5))
+  ggplot() + geom_point(aes(x = nu_tar, y = value, color = index, size = index), show.legend = FALSE) + 
+  scale_size_manual(values = c("m-ratio confidence" = 0.8, "m-ratio RT" = 0.25, "m-ratio logit" = 0.25)) + labs(color = "Index") +
+  geom_line(aes(x = nu_tar, y = value, color = index), size = 0.25) +
+  facet_wrap(~ eta + sz, ncol = 2,
+             labeller = labeller( eta =  as_labeller(c("0.0005" = "η == 0.0005", "0.005" = "η == 0.005"), label_parsed),
+                                  sz =  as_labeller(c("0.1" = "s[z] == 0.1", "0.6" = "s[z] == 0.6"), label_parsed))) +
+  theme(legend.text = element_text(size = 7),
+        legend.position = "top", 
+        legend.direction = "horizontal",
+        legend.background = element_rect(fill = NA, colour = NA),
+        legend.key = element_rect(fill = NA),
+        legend.title = element_text(size = 8),
+        strip.text = element_text(size = 7, margin = margin(-0.2, -0.2, -0.2, -0.2, "pt"))) +
+  scale_color_manual(values = c(hue_pal()(3))) + 
+  scale_x_continuous(breaks = c(0.0015, 0.0025, 0.0035)) + xlab(expression(bold(paste({ν[target]})))) + ylab("m-ratio") +
+  coord_cartesian(ylim = c(-0.4, 1.1)) + scale_y_continuous(breaks = seq(0, 1, 0.5)) -> p6_ddm
+
+p6_ddm <- p6_ddm + guides(color = F) + theme(legend.text = element_text(size = 3),
+                                             legend.position = "top", 
+                                             legend.direction = "horizontal",
+                                             legend.background = element_rect(fill = NA, colour = NA),
+                                             legend.key = element_rect(fill = NA),
+                                             strip.text = element_text(size = 3.5, face = "bold", color = "black"),
+                                             plot.margin = margin(1.5, 3.5, 0.5, 1.5), 
+                                             plot.title = element_text(size = 4), 
+                                             axis.title.x = element_text(size = 4, margin = margin(t = -2)),
+                                             axis.title.y = element_text(size = 4, margin = margin(r = -0.5)),
+                                             axis.text.x = element_text(size = 3, angle = 25),
+                                             axis.text.y = element_text(size = 3),
+                                             axis.line        = element_line(linewidth = 0.2),
+                                             axis.ticks       = element_line(linewidth = 0.2),
+                                             panel.grid.major = element_line(linewidth = 0.15),
+                                             panel.grid.minor = element_line(linewidth = 0.1))
 
 # m-ratio boost by rt
 sdt_ddm %>%
   pivot_longer(cols = c("po_logit_to_po"), 
                names_to = "index", values_to = "value") %>%
-  mutate(condition = ifelse(eta == 5e-04 & sz == 0.1, "η == 0.0005 ~ phantom(',') ~ s[z] == 0.1",
-                            ifelse(eta == 5e-04 & sz == 0.6, "η == 0.0005 ~ phantom(',') ~ s[z] == 0.6",
-                                   ifelse(eta == 0.005 & sz == 0.1, "η == 0.005 ~ phantom(',') ~ s[z] == 0.1",
-                                          "η == 0.005 ~ phantom(',') ~ s[z] == 0.6")))) %>%
-  ggplot() + geom_point(aes(x = nu_tar, y = value, color = index), size = 0.3) +
-  geom_line(aes(x = nu_tar, y = value, color = index), size = 0.3) +
-  geom_hline(yintercept = 1, linetype = "dashed", size = 0.3) + theme(legend.position = "top") +
+  ggplot() + geom_point(aes(x = nu_tar, y = value, color = index), size = 0.25) +
+  geom_line(aes(x = nu_tar, y = value, color = index), size = 0.25) +
+  facet_wrap(~ eta + sz, ncol = 2,
+           labeller = labeller( eta =  as_labeller(c("0.0005" = "η == 0.0005", "0.005" = "η == 0.005"), label_parsed),
+                                sz =  as_labeller(c("0.1" = "s[z] == 0.1", "0.6" = "s[z] == 0.6"), label_parsed))) +
+  theme(legend.text = element_text(size = 7),
+        legend.position = "top", 
+        legend.direction = "horizontal",
+        legend.background = element_rect(fill = NA, colour = NA),
+        legend.key = element_rect(fill = NA),
+        legend.title = element_text(size = 8),
+        strip.text = element_text(size = 7, margin = margin(-0.2, -0.2, -0.2, -0.2, "pt"))) +
   scale_color_manual(values = c("#E36414")) +
-  ylab(expression(bold(paste(meta, "-", d, "'"[confidence+RT]/meta, "-", d, "'"[confidence])))) +
   scale_x_continuous(breaks = c(0.0015, 0.0025, 0.0035)) + xlab(expression(bold(paste({ν[target]})))) +
-  facet_wrap(~ condition, labeller = label_parsed, nrow = 2) +
-  coord_cartesian(ylim = c(0.95, 1.8)) + scale_y_continuous(breaks = seq(1, 1.8, 0.2)) -> p7_ddm
-p7_ddm
-p7_ddm <- p7_ddm + guides(color = F) +
-  theme(strip.text = element_text(size = 5.8, face = "bold", color = "black"),
-        plot.margin = margin(5.5, 5.5, 5.5, 5.5), 
-        plot.title = element_text(size = 5), 
-        axis.title.x = element_text(size = 7),
-        axis.title.y = element_text(size = 6.3),
-        axis.text.x = element_text(size = 5, angle = 25),
-        axis.text.y = element_text(size = 5))
+  ylab(expression(bold(paste(meta, "-", d, "'"[confidence+RT]/meta, "-", d, "'"[confidence])))) +
+  coord_cartesian(ylim = c(1.0, 1.1)) + scale_y_continuous(breaks = seq(1, 1.1, 0.05)) -> p7_ddm
+
+p7_ddm <- p7_ddm + guides(color = F) + theme(legend.text = element_text(size = 3),
+                                             legend.position = "top", 
+                                             legend.direction = "horizontal",
+                                             legend.background = element_rect(fill = NA, colour = NA),
+                                             legend.key = element_rect(fill = NA),
+                                             strip.text = element_text(size = 3.5, face = "bold", color = "black"),
+                                             plot.margin = margin(1, 3.5, 0.5, 1), 
+                                             plot.title = element_text(size = 4), 
+                                             axis.title.x = element_text(size = 4, margin = margin(t = -2)),
+                                             axis.title.y = element_text(size = 4, margin = margin(r = -0.5)),
+                                             axis.text.x = element_text(size = 3, angle = 25),
+                                             axis.text.y = element_text(size = 2.8),
+                                             axis.line        = element_line(linewidth = 0.2),
+                                             axis.ticks       = element_line(linewidth = 0.2),
+                                             panel.grid.major = element_line(linewidth = 0.15),
+                                             panel.grid.minor = element_line(linewidth = 0.1))
 
 # correctness x rt x post confidence
 simdat_ddm$rt_bin <- cut(simdat_ddm$rt, breaks = quantile(simdat_ddm$rt, probs = seq(0, 1, by = 0.25)), include.lowest = TRUE)
@@ -697,15 +754,17 @@ simdat_ddm %>%
 
 # write.csv(simdat_ddm, "simdat_ddm.csv", row.names =  F)
 
-save_plot("figure_6a.jpg", p1_ddm, width = 5, height = 4.1)
-save_plot("figure_6b.jpg", p3_ddm, width = 5, height = 4.1)
-save_plot("figure_6c.jpg", p4_ddm, width = 5, height = 4.1)
+g6 <- (p1_ddm | p3_ddm | p4_ddm) +
+  plot_annotation( theme = theme(
+    plot.margin = margin(0.5, 0.5, 0.5, 0.5)))
+save_plot("figure_6.jpg", g6, width = 8, height = 2.5, dpi = 500)
 
-save_plot("figure_7a.jpg", p5_ddm, width = 5.5, height = 4.1)
-save_plot("figure_7b.jpg", p6_ddm, width = 5.5, height = 4.1)
-save_plot("figure_7c.jpg", p7_ddm, width = 5.5, height = 4.1)
+g7 <- (p5_ddm | p6_ddm | p7_ddm) +
+  plot_annotation( theme = theme(
+    plot.margin = margin(0.5, 0.5, 0.5, 0.5)))
+save_plot("figure_7.jpg", g7, width = 8, height = 2.5, dpi = 500) # LLLLLLOOOGIIITTT##############
 
-save_plot("figure_8.jpg", p14_ddm, width = 12, height = 11
+save_plot("figure_8.jpg", p14_ddm, width = 12, height = 11)
 save_plot("figure_a4.png", p11_ddm, width = 12, height = 12.5)
 save_plot("figure_a5.png", p12_ddm, width = 12, height = 12.5)
 save_plot("figure_a6.png", p2_ddm)
