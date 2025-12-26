@@ -672,11 +672,11 @@ simdat_ddm_bin %>%
 
 # type-1 roc
 roc_1_ddm %>% filter(variable != "be" & variable != "logit_be") %>%
-  mutate(variable = fct_recode(variable, "confidence" = "post", "RT" = "RT", "logit" = "logit_post"),
-         variable = fct_relevel(variable, "confidence", "RT", "logit")) %>%
+  mutate(variable = fct_recode(variable, "confidence" = "post", "RT" = "RT", "confidence+RT" = "logit_post"),
+         variable = fct_relevel(variable, "confidence", "RT", "confidence+RT")) %>%
   ggplot() + geom_point(aes(x = far_1, y = hr_1, color = factor(variable), size = factor(variable)), alpha = 0.7) +
   guides(size = "none", color = guide_legend(override.aes = list(size = 2))) +
-  scale_size_manual(values = c("confidence" = 1.8, "RT" = 0.8, "logit" = 0.8)) +  
+  scale_size_manual(values = c("confidence" = 1.8, "RT" = 0.8, "confidence+RT" = 0.8)) +  
   geom_line(roc_1_sdt_ddm, mapping = aes(x = far_1, y = hr_1), linetype = "dashed") +
   scale_color_manual(values = c(hue_pal()(3)), guide = guide_legend(override.aes = list(color = "white"))) +
   facet_wrap(. ~ nu_tar + eta + sz, ncol = 4,
@@ -696,11 +696,11 @@ p11_ddm <- p11_ddm + theme(axis.text.x = element_text(angle = 25),
 
 # type-2 roc
 roc_2_ddm %>% filter(variable != "be" & variable != "logit_be") %>%
-  mutate(variable = fct_recode(variable, "confidence" = "post", "RT" = "RT", "logit" = "logit_post"),
-         variable = fct_relevel(variable, "confidence", "RT", "logit")) %>%
+  mutate(variable = fct_recode(variable, "confidence" = "post", "RT" = "RT", "confidence+RT" = "logit_post"),
+         variable = fct_relevel(variable, "confidence", "RT", "confidence+RT")) %>%
   ggplot() + geom_point(aes(x = far_2, y = hr_2, color = factor(variable), size = factor(variable)), alpha = 0.7) +
   guides(size = "none", color = guide_legend(override.aes = list(size = 2))) +
-  scale_size_manual(values = c("confidence" = 1.8, "RT" = 0.8, "logit" = 0.8)) +  
+  scale_size_manual(values = c("confidence" = 1.8, "RT" = 0.8, "confidence+RT" = 0.8)) +  
   geom_line(roc_2_sdt_ddm, mapping = aes(x = far_2, y = hr_2), linetype = "dashed") +
   scale_color_manual(values = c(hue_pal()(3)), guide = guide_legend(override.aes = list(color = "white"))) +
   facet_wrap(. ~ nu_tar + eta + sz, ncol = 4,

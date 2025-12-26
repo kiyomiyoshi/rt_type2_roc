@@ -42,7 +42,7 @@ reliability
 # attenuation correction
 df_joined <- cor_by_exp %>%
   left_join(reliability, by = "exp") %>%
-  select(exp, n, r, r_conf, r_rt, r_conf_sb, r_rt_sb)
+  dplyr::select(exp, n, r, r_conf, r_rt, r_conf_sb, r_rt_sb)
 
 df_joined <- df_joined %>%
   mutate(
@@ -83,7 +83,7 @@ df_meta <- df_complete %>%
     se_z_r = 1 / sqrt(n - 3),
     se_z_r_corrected = 1 / sqrt(n - 3)
   ) %>%
-  select(exp, n, r, r_corrected, z_r, z_r_corrected, se_z_r, se_z_r_corrected)
+  dplyr::select(exp, n, r, r_corrected, z_r, z_r_corrected, se_z_r, se_z_r_corrected)
 
 clip_r <- function(r, eps = 1e-6) {
   pmax(pmin(r, 1 - eps), -1 + eps)
@@ -129,3 +129,5 @@ list(
     ci_ub = z_to_r(res_rc$ci.ub)
   )
 )
+
+write.csv(df_joined, "df_joined.csv")
