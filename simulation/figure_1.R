@@ -6,6 +6,7 @@ library(sjPlot)
 library(metaSDT)
 library(GGally)
 library(ppcor)
+library(ggsci)
 
 #'#
 dat <- fread("data_Hainguerlot_2018.csv", header = T)
@@ -76,39 +77,40 @@ desired_order <- c("S1, B1", "S1, B2","S1, B3",
 d$grp1 <- factor(d$grp1, levels = desired_order)
 
 ggplot(d, aes(x = grp1, fill = Stimulus)) +
-  geom_bar(position = "dodge", alpha = 0.7) +
-  scale_fill_manual(values = c("red", "blue")) +
+  geom_bar(position = "dodge", alpha = 0.7, linewidth = 0.2) +
+  scale_fill_manual(values = c("#E36414", "#3A0F6B")) +
   scale_x_discrete(
     labels = c(
-      "Resp = S1\nRT = B1",
-      "Resp = S1\nRT = B2",
-      "Resp = S1\nRT = B3",
-      "Resp = S2\nRT = B3",
-      "Resp = S2\nRT = B2",
-      "Resp = S2\nRT = B1"
+      "Resp = S1,\nRT = B1",
+      "Resp = S1,\nRT = B2",
+      "Resp = S1,\nRT = B3",
+      "Resp = S2,\nRT = B3",
+      "Resp = S2,\nRT = B2",
+      "Resp = S2,\nRT = B1"
     )
   ) +
   ylab("Frequency") +
   xlab(NULL) +
   labs(fill = NULL) +
   theme_minimal(base_size = 8) +
-  theme(
-    axis.text.x = element_text(
-      angle = 0,
-      hjust = 0.5,
-      vjust = 0.5,
-      size = 6,
-      color = "black"
-    ),
-    axis.text.y = element_text(
-      size = 6,
-      color = "black"
-    ),
-    legend.position = "none"
+  theme(axis.title.x = element_text(size = 7),
+        axis.title.y = element_text(size = 7),
+        axis.text.x = element_text(
+          angle = 45,
+          hjust = 0.5,
+          vjust = 0.5,
+          size = 5.6,
+          color = "black"
+        ),
+        axis.text.y = element_text(
+          size = 6,
+          color = "black"
+        ),
+        legend.position = "none"
   ) -> g1
+ 
 
 g1
-
 
 #'#
 cuts <- quantile(d$RT_dec, probs = seq(0, 1, length.out = 4))
@@ -117,15 +119,16 @@ cuts
 
 labels_1 <- lapply(1:2, function(i) bquote(t[.(i)]))
 labels_2 <- c("B1", "B2", "B3") 
-x_pos <- c(0.66, 0.88, 1.1)
+x_pos <- c(0.62, 0.88, 1.14)
 
 ggplot(d) +
   geom_histogram(
     aes(x = RT_dec, fill = Stimulus),
     binwidth = diff(range(d$RT_dec)) / 30,
-    alpha = 0.7
+    alpha = 0.7,
+    linewidth = 0.2
   ) +
-  geom_vline(xintercept = cuts, linetype = "dashed", color = "black", size = 0.55) +
+  geom_vline(xintercept = cuts, linetype = "dashed", color = "black", size = 0.35) +
   annotate(
     "text",
     x = cuts,
@@ -139,7 +142,7 @@ ggplot(d) +
     x = x_pos,
     y = 55,
     label = labels_2) +
-  scale_fill_manual(values = c("red", "blue"),
+  scale_fill_manual(values = c("#E36414", "#3A0F6B"),
                     name = "Stim") +
   theme_minimal(base_size = 8) +
   xlab("RT") +
@@ -149,7 +152,12 @@ ggplot(d) +
     axis.text.y = element_text(size = 6, color = "black"),
     axis.text = element_text(color = "black"),
     axis.title = element_text(color = "black"),
-    legend.position = c(0.805, 0.875)) + 
+    axis.title.x = element_text(size = 7),
+    axis.title.y = element_text(size = 7),
+    legend.position = c(0.76, 0.885),
+    legend.title = element_text(size = 7),
+    legend.text  = element_text(size = 6),
+    legend.key.size = unit(3, "mm")) + 
   ylim(0, 60) -> g2
 
 g2
@@ -158,44 +166,43 @@ g2
 d <- mutate(d, bin = ifelse(RT_bin == 1, "RT = B1",
                             ifelse(RT_bin == 2, "RT = B2", "RT = B3")))
 ggplot(d, aes(x = bin, fill = factor(Correct))) +
-  geom_bar(position = "dodge", alpha = 1.0) +
-  scale_fill_manual(values = c("#1BCAD3", "#3A0F6B"),
-                    name = "Resp" ) +
+  geom_bar(position = "dodge", alpha = 1.0, linewidth = 0.2) +
+  scale_fill_npg(name = "Resp") +
   ylab("Frequency") +
   xlab(NULL) +
   labs(fill = NULL) +
   theme_minimal(base_size = 8) +
   ylim(0, 150) +
   theme(
-    legend.position = c(0.84, 0.88),
+    legend.position = c(0.84, 0.89),
+    legend.title = element_text(size = 7),
+    legend.text  = element_text(size = 6),
+    legend.key.size = unit(3, "mm"),
+    axis.title.x = element_text(size = 7),
+    axis.title.y = element_text(size = 7),
     axis.text.x = element_text(angle = 0, size = 6, color = "black"),
     axis.text.y = element_text(size = 6, color = "black")) -> g3
 g3
-
-c("#1F3A5F", "#E36414")
-c("#264653", "#E9C46A")
-c("#0B1D2A", "#B08968")
-c("#3D405B", "#4EA8DE")
-c("#005F73", "#EE9B00")
-c("#1B4332", "#F1C27D")
-c("#1BCAD3", "#3A0F6B")
-
 
 #'#
 roc2 <- data.frame(far2 = c(0, p_fa2), hr2 = c(0, p_hit2))
   
 ggplot(roc2[2:3, ], aes(x = far2, y = hr2)) + 
-  geom_point(size = 2) +
-  geom_line(roc2, mapping = aes(x = far2, y = hr2)) +
+  geom_point(size = 1.5) +
+  geom_line(roc2, mapping = aes(x = far2, y = hr2), size = 0.3) +
   xlab("p(RT = fast|Resp = incorrect)") + 
   ylab("p(RT = fast|Resp = correct)") +
   coord_equal() +
   xlim(0, 1) + ylim(0, 1) +
   theme_minimal(base_size = 8) +
-  theme(axis.text.x = element_text(angle = 0, size = 6, color = "black"),
+  theme(axis.title.x = element_text(size = 7),
+        axis.title.y = element_text(size = 7),
+        axis.text.x = element_text(angle = 0, size = 6, color = "black"),
         axis.text.y = element_text(size = 6, color = "black")) -> g4
 g4
 
-g <- cowplot::plot_grid(g2, g1, g3, g4, labels = c("(a)", "(b)", "(c)", "(d)"), 
-                        nrow = 2, label_x = -0.02, label_y = 1.01, label_size = 10)
-ggsave("figure_1.jpg", g, width = 6, height = 6,    units = "in", dpi = 500)
+g <- cowplot::plot_grid(g2, g1, g3, g4, labels = c("a", "b", "c", "d"), 
+                        scale = 0.93,
+                        nrow = 2, label_x = 0, label_y = 1.01, label_size = 8)
+g
+ggsave("figure_1.jpg", g, width = 3.6, height = 3.6, units = "in", dpi = 500)
